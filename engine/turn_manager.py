@@ -4,6 +4,7 @@ from log import logger
 
 class TurnManager:
     @staticmethod
+    @logger.log_function
     def tas_at(game, oyuncu_index, tas_id):
         oyuncu = game.oyuncular[oyuncu_index]
         if not oyuncu.el and game.acilmis_oyuncular[oyuncu_index]:
@@ -28,6 +29,7 @@ class TurnManager:
         return False
 
     @staticmethod
+    @logger.log_function
     def desteden_cek(game, oyuncu_index):
         if not (game.oyun_durumu == GameState.NORMAL_TUR and game.sira_kimde_index == oyuncu_index): return False
         oyuncu = game.oyuncular[oyuncu_index]
@@ -41,6 +43,7 @@ class TurnManager:
         return False
 
     @staticmethod
+    @logger.log_function
     def atilan_tasi_al(game, oyuncu_index):
         if game.oyun_durumu != GameState.ATILAN_TAS_DEGERLENDIRME: return
         if not game.atilan_taslar: return
@@ -61,6 +64,7 @@ class TurnManager:
         game.atilan_tas_degerlendirici = None
 
     @staticmethod
+    @logger.log_function
     def atilan_tasi_gecti(game):
         if game.oyun_durumu != GameState.ATILAN_TAS_DEGERLENDIRME: return
         game.atilan_tas_degerlendirici.bir_sonraki()

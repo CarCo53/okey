@@ -1,5 +1,7 @@
+from log import logger
 # core/tile.py
 class Tile:
+    @logger.log_function
     def __init__(self, renk, deger, imaj_adi, id):
         self.renk = renk
         self.deger = deger
@@ -7,6 +9,7 @@ class Tile:
         self.id = id
         self.joker_yerine_gecen = None 
 
+    @logger.log_function
     def __repr__(self):
         if self.joker_yerine_gecen:
             return f"Okey(yerine={self.joker_yerine_gecen.renk}_{self.joker_yerine_gecen.deger})"

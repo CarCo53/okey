@@ -1,11 +1,12 @@
 # engine/action_manager.py
-from log import logger
 from rules.rules_manager import Rules
 from rules.joker_manager import JokerManager
 from core.game_state import GameState
+from log import logger
 
 class ActionManager:
     @staticmethod
+    @logger.log_function
     def el_ac(game, oyuncu_index, tas_id_list):
         oyuncu = game.oyuncular[oyuncu_index]
         secilen_taslar = [tas for tas in oyuncu.el if tas.id in tas_id_list]
@@ -17,6 +18,7 @@ class ActionManager:
         return ActionManager._eli_ac_ve_isle(game, oyuncu_index, secilen_taslar)
 
     @staticmethod
+    @logger.log_function
     def _eli_ac_ve_isle(game, oyuncu_index, secilen_taslar):
         oyuncu = game.oyuncular[oyuncu_index]
         is_ilk_acilis = not game.acilmis_oyuncular[oyuncu_index]
@@ -46,6 +48,7 @@ class ActionManager:
             return {"status": "fail", "message": "Geçersiz per."}
 
     @staticmethod
+    @logger.log_function
     def islem_yap(game, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
         el_acan_tur = game.ilk_el_acan_tur.get(isleyen_oyuncu_idx)
         if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:

@@ -1,24 +1,27 @@
 # ai/ai_player.py
 from core.player import Player
-from log import logger
 from itertools import combinations
+
 from rules.rules_manager import Rules
 from ai.strategies.planlama_stratejisi import eli_analiz_et
 from ai.strategies.discard_stratejisi import en_akilli_ati_bul
 from ai.strategies.cift_stratejisi import en_iyi_ciftleri_bul, atilacak_en_kotu_tas as atilacak_en_kotu_cift
 from ai.strategies.coklu_per_stratejisi import en_iyi_coklu_per_bul
 from ai.strategies.klasik_per_stratejisi import en_iyi_per_bul
+from log import logger
 
 class AIPlayer(Player):
+    @logger.log_function
     def __init__(self, isim):
         super().__init__(isim)
         self.potansiyel_perler = []
         self.ihtiyac_listesi = {}
 
+    @logger.log_function
     def _elini_yeniden_degerlendir(self, game):
         self.potansiyel_perler, self.ihtiyac_listesi = eli_analiz_et(self.el, game)
-        logger.info(f"AI {self.isim} planını güncelledi. İhtiyaçları: {list(self.ihtiyac_listesi.keys())}")
-
+    
+    @logger.log_function
     def atilan_tasi_degerlendir(self, oyun, atilan_tas):
         my_index = oyun.oyuncular.index(self)
         if oyun.acilmis_oyuncular[my_index]:
@@ -32,6 +35,7 @@ class AIPlayer(Player):
              return True
         return False
 
+    @logger.log_function
     def ai_el_ac_dene(self, oyun):
         gorev = oyun.mevcut_gorev
         kombinasyon = None
@@ -40,6 +44,7 @@ class AIPlayer(Player):
         else: kombinasyon = en_iyi_per_bul(self.el, gorev)
         return [tas.id for tas in kombinasyon] if kombinasyon else None
     
+    @logger.log_function
     def karar_ver_ve_at(self, oyun):
         my_index = oyun.oyuncular.index(self)
         if oyun.mevcut_gorev == "Çift" and not oyun.acilmis_oyuncular[my_index]:
@@ -47,14 +52,17 @@ class AIPlayer(Player):
         self._elini_yeniden_degerlendir(oyun)
         korunacak_taslar_idler = {tas.id for per in self.potansiyel_perler for tas in per}
         if oyun.acilmis_oyuncular[my_index]:
-            isleyebilecegim_hamleler = self.ai_islem_yap_dene(oyun, return_all_options=True)
-            if isleyebilecegim_hamleler:
-                for hamle in isleyebilecegim_hamleler:
-                    korunacak_taslar_idler.add(hamle["tas_id"])
+            # El açtığı turda değilse işleyebileceği taşları koru
+            if oyun.ilk_el_acan_tur.get(my_index, -1) < oyun.tur_numarasi:
+                isleyebilecegim_hamleler = self.ai_islem_yap_dene(oyun, return_all_options=True)
+                if isleyebilecegim_hamleler:
+                    for hamle in isleyebilecegim_hamleler:
+                        korunacak_taslar_idler.add(hamle["tas_id"])
         atilabilecekler = [t for t in self.el if t.id not in korunacak_taslar_idler]
         if not atilabilecekler: atilabilecekler = self.el
         return en_akilli_ati_bul(self.el, atilabilecekler)
 
+    @logger.log_function
     def ai_islem_yap_dene(self, oyun, return_all_options=False, ek_tas=None):
         bulunan_hamleler = []
         gecici_el = self.el + ([ek_tas] if ek_tas else [])
