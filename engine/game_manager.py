@@ -10,6 +10,12 @@ from engine.turn_manager import TurnManager
 from log import logger
 
 class Game:
+# engine/game_manager.py dosyasına, Game sınıfı içine bu fonksiyonu ekleyin.
+
+    @logger.log_function
+    def joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
+        return ActionManager.joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
+
     @logger.log_function
     def __init__(self):
         self.oyuncular = [Player("Oyuncu 1 (Siz)"), AIPlayer("AI Oyuncu 2"), AIPlayer("AI Oyuncu 3"), AIPlayer("AI Oyuncu 4")]

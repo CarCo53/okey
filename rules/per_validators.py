@@ -31,14 +31,18 @@ def seri_mu(taslar, min_sayi=3):
     if not sayilar: return joker_sayisi >= min_sayi
     if len(set(sayilar)) != len(sayilar): return False
     sayilar.sort()
-    is_dongusel = 1 in sayilar and sayilar[-1] > 10
+    
+    # 1 ve 13'ün aynı anda bulunduğu özel "döngüsel" durumu kontrol et
+    is_dongusel = 1 in sayilar and 13 in sayilar
     if is_dongusel:
+        # 1'i 14 olarak kabul edip sıralayarak kontrol yap
         dongusel_kopya = sorted([14 if s == 1 else s for s in sayilar])
         gereken_bosluk = (dongusel_kopya[-1] - dongusel_kopya[0] + 1) - len(dongusel_kopya)
         if joker_sayisi >= gereken_bosluk: return True
+
+    # Normal seri kontrolü
     gereken_bosluk_normal = (sayilar[-1] - sayilar[0] + 1) - len(sayilar)
     return joker_sayisi >= gereken_bosluk_normal
-
 @logger.log_function
 def coklu_per_dogrula(taslar, tip, min_sayi, adet):
     if len(taslar) != min_sayi * adet: return False

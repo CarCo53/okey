@@ -63,16 +63,35 @@ class Arayuz:
         else: self.secili_tas_idler.append(tas_id)
         self.arayuzu_guncelle()
 
+# gui/gui.py dosyasındaki mevcut per_sec fonksiyonunu silip bunu yapıştırın.
+
     @logger.log_function
     def per_sec(self, oyuncu_index, per_index):
+        # Elimizden bir taş seçili olmalı
         if len(self.secili_tas_idler) != 1:
-            self.statusbar.guncelle("İşlemek için elinizden 1 taş seçmelisiniz.")
+            self.statusbar.guncelle("Joker almak veya işlemek için elinizden 1 taş seçmelisiniz.")
             return
-        sonuc = self.oyun.islem_yap(0, oyuncu_index, per_index, self.secili_tas_idler[0])
-        if sonuc:
+
+        secili_tas_id = self.secili_tas_idler[0]
+        
+        # Önce joker değiştirmeyi dene
+        sonuc_joker = self.oyun.joker_degistir(0, oyuncu_index, per_index, secili_tas_id)
+        if sonuc_joker.get("status") == "success":
             self.secili_tas_idler = []
+            self.statusbar.guncelle("Joker başarıyla alındı!")
+            self.arayuzu_guncelle()
+            return
+
+        # Joker değiştirme başarısız olduysa, normal işlemeyi dene
+        sonuc_islem = self.oyun.islem_yap(0, oyuncu_index, per_index, secili_tas_id)
+        if sonuc_islem:
+            self.secili_tas_idler = []
+            self.statusbar.guncelle("Taş başarıyla işlendi!")
         else:
-            self.statusbar.guncelle("Geçersiz hamle! (El açtığınız turda işleme yapamazsınız)")
+            # Her ikisi de başarısız olduysa hata mesajı göster
+            hata_mesaji = sonuc_joker.get("message", "Geçersiz hamle!")
+            self.statusbar.guncelle(hata_mesaji)
+            
         self.arayuzu_guncelle()
             
     @logger.log_function
@@ -99,32 +118,32 @@ class Arayuz:
         self.secili_tas_idler = []
         self.arayuzu_guncelle()
     
+# gui/gui.py dosyasındaki ai_oynat fonksiyonunu bununla değiştirin.
+
     def ai_oynat(self):
         oyun = self.oyun
         if oyun.oyun_bitti_mi():
             self.arayuzu_guncelle()
             return
 
-        sira_index = oyun.sira_kimde_index
+        # --- ATILAN TAŞI DEĞERLENDİRME AŞAMASI ---
+        if oyun.oyun_durumu == GameState.ATILAN_TAS_DEGERLENDIRME:
+            degerlendiren_idx = oyun.atilan_tas_degerlendirici.siradaki()
+            if isinstance(oyun.oyuncular[degerlendiren_idx], AIPlayer):
+                ai_oyuncu = oyun.oyuncular[degerlendiren_idx]
+                logger.info(f"AI {degerlendiren_idx} atılan taşı değerlendiriyor.")
+                atilan_tas = oyun.atilan_taslar[-1]
+                if ai_oyuncu.atilan_tasi_degerlendir(oyun, atilan_tas):
+                    oyun.atilan_tasi_al(degerlendiren_idx)
+                else:
+                    oyun.atilan_tasi_gecti()
+                self.arayuzu_guncelle()
         
-        # Sadece AI sırası ise ve oyun bitmediyse devam et
-        if sira_index != 0 and isinstance(oyun.oyuncular[sira_index], AIPlayer):
-            ai_oyuncu = oyun.oyuncular[sira_index]
-            
-            # --- ATILAN TAŞI DEĞERLENDİRME AŞAMASI ---
-            if oyun.oyun_durumu == GameState.ATILAN_TAS_DEGERLENDIRME:
-                degerlendiren_idx = oyun.atilan_tas_degerlendirici.siradaki()
-                if degerlendiren_idx == sira_index:
-                    logger.info(f"AI {sira_index} atılan taşı değerlendiriyor.")
-                    atilan_tas = oyun.atilan_taslar[-1]
-                    if ai_oyuncu.atilan_tasi_degerlendir(oyun, atilan_tas):
-                        oyun.atilan_tasi_al(sira_index)
-                    else:
-                        oyun.atilan_tasi_gecti()
-                    self.arayuzu_guncelle()
-            
-            # --- NORMAL TUR AKIŞI ---
-            elif oyun.oyun_durumu in [GameState.NORMAL_TUR, GameState.NORMAL_TAS_ATMA]:
+        # --- NORMAL TUR AKIŞI ---
+        elif oyun.oyun_durumu in [GameState.NORMAL_TUR, GameState.NORMAL_TAS_ATMA]:
+            sira_index = oyun.sira_kimde_index
+            if sira_index != 0 and isinstance(oyun.oyuncular[sira_index], AIPlayer):
+                ai_oyuncu = oyun.oyuncular[sira_index]
                 logger.info(f"Sıra AI {sira_index}'de. Durum: {oyun.oyun_durumu}")
 
                 # 1. TAŞ ÇEKME (Gerekliyse)
@@ -141,7 +160,6 @@ class Arayuz:
                     if ac_kombo:
                         oyun.el_ac(sira_index, ac_kombo)
                         self.arayuzu_guncelle()
-                        # Elini açtığı için bu tur başka hamle yapamaz, doğrudan taş atar
                 
                 # B. Eli zaten açıksa ve işlem yapma sırası geldiyse
                 elif oyun.ilk_el_acan_tur.get(sira_index, -1) < oyun.tur_numarasi:
@@ -149,7 +167,7 @@ class Arayuz:
                     while islem_yapildi: # İşlenecek taş kalmayana kadar döner
                         islem_hamlesi = ai_oyuncu.ai_islem_yap_dene(oyun)
                         if islem_hamlesi:
-                            oyun.islem_yap(sira_index, **islem_hamlesi)
+                            oyun.islem_yap(sira_index, islem_hamlesi['sahip_idx'], islem_hamlesi['per_idx'], islem_hamlesi['tas_id'])
                             self.arayuzu_guncelle()
                         else:
                             islem_yapildi = False
@@ -164,8 +182,7 @@ class Arayuz:
                         oyun.kazanan_index = sira_index
                 self.arayuzu_guncelle()
         
-        self.pencere.after(750, self.ai_oynat) # Gecikmeyi biraz artırdım
-
+        self.pencere.after(750, self.ai_oynat)
     @logger.log_function
     def baslat(self):
         self.pencere.mainloop()

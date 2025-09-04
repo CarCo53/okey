@@ -1,4 +1,5 @@
-# gui/arayuzguncelle.py
+# gui/arayuzguncelle.py DOSYASININ YENİ İÇERİĞİ
+
 import tkinter as tk
 from core.game_state import GameState
 from log import logger
@@ -6,6 +7,7 @@ from log import logger
 @logger.log_function
 def arayuzu_guncelle(arayuz):
     oyun = arayuz.oyun
+    # Oyuncu ellerini güncelle
     for i, oyuncu in enumerate(oyun.oyuncular):
         key = f"oyuncu_{i+1}"
         frame = arayuz.alanlar[key]
@@ -22,9 +24,11 @@ def arayuzu_guncelle(arayuz):
                 if i == 0:
                     label.bind("<Button-1>", lambda e, t_id=tas.id: arayuz.tas_sec(t_id))
 
+    # Masa (Açılan Perler) alanını temizle
     for widget in arayuz.masa_frame.winfo_children():
         widget.destroy()
 
+    # Açılan perleri yeniden çiz
     for oyuncu_idx, per_listesi in oyun.acilan_perler.items():
         if not per_listesi: continue
         oyuncu_adi = oyun.oyuncular[oyuncu_idx].isim
@@ -35,30 +39,34 @@ def arayuzu_guncelle(arayuz):
         for per_idx, per in enumerate(per_listesi):
             per_cerceve_dis = tk.Frame(oyuncu_per_cercevesi, borderwidth=1, relief="sunken", padx=2, pady=2)
             per_cerceve_dis.pack(side=tk.LEFT, padx=5)
+            # Tüm per çerçevesini tıklanabilir yap (normal işlemek için)
             per_cerceve_dis.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
 
             for tas in per:
-                bg_renk = "#F0F0F0"
-                cerceve_renk = "black"
-                cerceve_kalinligi = 0
+                # Joker ise yerine geçen taşı göster ve çerçevele
                 if tas.joker_yerine_gecen:
-                    renk = tas.joker_yerine_gecen.renk
-                    renk_map = {"kirmizi": "red", "mavi": "blue", "sari": "yellow", "siyah": "black"}
-                    tk_renk = renk_map.get(renk, "black")
-                    bg_renk_map = {"red": "#ffdddd", "blue": "#ddddff", "yellow": "#ffffcc", "black": "#d3d3d3"}
-                    bg_renk = bg_renk_map.get(tk_renk, "#F0F0F0")
-                    cerceve_renk = tk_renk
-                    cerceve_kalinligi = 2
-                tas_cerceve = tk.Frame(per_cerceve_dis, bg=bg_renk)
-                tas_cerceve.pack(side=tk.LEFT)
-                img = arayuz.visuals.tas_resimleri.get(tas.imaj_adi)
-                if img:
-                    label = tk.Label(tas_cerceve, image=img, borderwidth=0, bg=bg_renk,
-                                     highlightbackground=cerceve_renk, highlightcolor=cerceve_renk, 
-                                     highlightthickness=cerceve_kalinligi)
-                    label.pack(padx=1, pady=1)
-                    label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
+                    img_adi = tas.joker_yerine_gecen.imaj_adi
+                    img = arayuz.visuals.tas_resimleri.get(img_adi)
+                    
+                    # Jokeri belirtmek için özel çerçeve
+                    tas_cerceve = tk.Frame(per_cerceve_dis, bg="gold", borderwidth=2, relief="groove")
+                    tas_cerceve.pack(side=tk.LEFT, padx=1, pady=1)
+                    if img:
+                        label = tk.Label(tas_cerceve, image=img, borderwidth=0)
+                        label.pack()
+                        # Jokerin üzerine tıklandığında da per_sec tetiklensin
+                        label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
 
+                else: # Normal taş ise
+                    img = arayuz.visuals.tas_resimleri.get(tas.imaj_adi)
+                    if img:
+                        label = tk.Label(per_cerceve_dis, image=img, borderwidth=0)
+                        label.pack(side=tk.LEFT, padx=1, pady=1)
+                        # Normal taşların üzerine tıklandığında da per_sec tetiklensin
+                        label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
+
+
+    # Deste ve Atılan taşlar
     for widget in arayuz.deste_frame.winfo_children():
          if widget != arayuz.deste_sayisi_label:
             widget.destroy()
@@ -82,6 +90,7 @@ def arayuzu_guncelle(arayuz):
 
     arayuz.button_manager.butonlari_guncelle(oyun.oyun_durumu)
 
+    # Statusbar güncellemesi
     if oyun.oyun_durumu == GameState.BITIS:
         kazanan_isim = "Bilinmiyor"
         if oyun.kazanan_index is not None:
@@ -98,4 +107,4 @@ def arayuzu_guncelle(arayuz):
             sira_bilgi += " (Taş atarak başlayın)"
         arayuz.statusbar.guncelle(f"{sira_bilgi} | {oyuncu_durum}")
 
-    arayuz.pencere.after(500, arayuz.ai_oynat)
+    arayuz.pencere.after(750, arayuz.ai_oynat)
