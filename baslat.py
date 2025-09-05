@@ -1,4 +1,5 @@
 # baslat.py
+
 from rules.rules_manager import Rules
 from core.game_state import GameState
 import random
@@ -24,3 +25,5 @@ def baslat_oyun(game):
     game.atilan_tas_degerlendirici = None
     game.acilmis_oyuncular = [False] * len(game.oyuncular)
     game.ilk_el_acan_tur = {}
+    # Her oyuncu için hamle yapma durumunu sıfırla
+    game.oyuncu_hamle_yapti = [False] * len(game.oyuncular)

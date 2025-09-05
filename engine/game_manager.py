@@ -1,4 +1,5 @@
 # engine/game_manager.py
+
 from core.deck import Deck
 from core.player import Player
 from ai.ai_player import AIPlayer
@@ -10,12 +11,6 @@ from engine.turn_manager import TurnManager
 from log import logger
 
 class Game:
-# engine/game_manager.py dosyasına, Game sınıfı içine bu fonksiyonu ekleyin.
-
-    @logger.log_function
-    def joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
-        return ActionManager.joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
-
     @logger.log_function
     def __init__(self):
         self.oyuncular = [Player("Oyuncu 1 (Siz)"), AIPlayer("AI Oyuncu 2"), AIPlayer("AI Oyuncu 3"), AIPlayer("AI Oyuncu 4")]
@@ -32,6 +27,8 @@ class Game:
         self.tur_numarasi = 1
         self.ilk_el_acan_tur = {}
         self.arayuz = None
+        # Her oyuncunun tur içinde ana hamle (per açma/işleme) yapıp yapmadığını takip eder
+        self.oyuncu_hamle_yapti = [False] * len(self.oyuncular)
 
     @logger.log_function
     def baslat(self):
@@ -44,6 +41,10 @@ class Game:
     @logger.log_function
     def islem_yap(self, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
         return ActionManager.islem_yap(self, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
+        
+    @logger.log_function
+    def joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
+        return ActionManager.joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
 
     @logger.log_function
     def tas_at(self, oyuncu_index, tas_id):

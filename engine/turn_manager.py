@@ -1,4 +1,5 @@
 # engine/turn_manager.py
+
 from core.game_state import GameState, AtilanTasDegerlendirici
 from log import logger
 
@@ -22,6 +23,10 @@ class TurnManager:
                 game.oyun_durumu = GameState.BITIS
                 game.kazanan_index = oyuncu_index
                 return True
+
+            # Tur bittiği için tüm oyuncuların hamle yapma durumunu sıfırla
+            game.oyuncu_hamle_yapti = [False] * len(game.oyuncular)
+
             game.oyun_durumu = GameState.ATILAN_TAS_DEGERLENDIRME
             game.atilan_tas_degerlendirici = AtilanTasDegerlendirici(oyuncu_index, len(game.oyuncular))
             game.turda_tas_cekildi[oyuncu_index] = False

@@ -1,18 +1,21 @@
 # engine/action_manager.py
+
 from rules.rules_manager import Rules
 from rules.joker_manager import JokerManager
 from core.game_state import GameState
 from log import logger
 
 class ActionManager:
-# engine/action_manager.py dosyasının içine, ActionManager sınıfına bu yeni fonksiyonu ekleyin.
-
     @staticmethod
     @logger.log_function
     def joker_degistir(game, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
-        # Elini açmamış oyuncu bu işlemi yapamaz
         if not game.acilmis_oyuncular[degistiren_oyuncu_idx]:
             return {"status": "fail", "message": "Elini açmadan joker alamazsınız."}
+        
+        # Elini açtığı turda işleme yapamaz
+        el_acan_tur = game.ilk_el_acan_tur.get(degistiren_oyuncu_idx)
+        if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:
+            return {"status": "fail", "message": "El açtığınız turda joker alamazsınız."}
 
         oyuncu = game.oyuncular[degistiren_oyuncu_idx]
         degistirilecek_tas = next((t for t in oyuncu.el if t.id == tas_id), None)
@@ -22,18 +25,16 @@ class ActionManager:
         per = game.acilan_perler[per_sahibi_idx][per_idx]
         
         for i, per_tasi in enumerate(per):
-            # Perdeki jokeri ve yerine geçtiği taşı bul
             if per_tasi.renk == "joker" and per_tasi.joker_yerine_gecen:
                 yerine_gecen = per_tasi.joker_yerine_gecen
-                # Oyuncunun elindeki taş, jokerin yerine geçtiği taş ile aynı mı?
                 if yerine_gecen.renk == degistirilecek_tas.renk and yerine_gecen.deger == degistirilecek_tas.deger:
-                    joker = per.pop(i)  # Jokeri perden al
-                    joker.joker_yerine_gecen = None # Jokerin görevini sıfırla
+                    joker = per.pop(i)
+                    joker.joker_yerine_gecen = None
                     
-                    oyuncu.tas_al(joker) # Jokeri oyuncuya ver
-                    oyuncu.tas_at(tas_id) # Oyuncunun taşını per'e koymak için elinden çıkar
+                    oyuncu.tas_al(joker)
+                    oyuncu.tas_at(tas_id)
                     
-                    per.append(degistirilecek_tas) # Taşı per'e ekle
+                    per.append(degistirilecek_tas)
                     
                     oyuncu.el_sirala()
                     game._per_sirala(per)
@@ -44,6 +45,10 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def el_ac(game, oyuncu_index, tas_id_list):
+        # Bir turda birden fazla kez per açmayı veya işlemeyi engelle
+        if game.oyuncu_hamle_yapti[oyuncu_index]:
+            return {"status": "fail", "message": "Bu tur zaten bir hamle yaptınız (per açma/işleme)."}
+            
         oyuncu = game.oyuncular[oyuncu_index]
         secilen_taslar = [tas for tas in oyuncu.el if tas.id in tas_id_list]
         joker_kontrol_sonucu = JokerManager.el_ac_joker_kontrolu(game, oyuncu, secilen_taslar)
@@ -63,7 +68,9 @@ class ActionManager:
             dogrulama_sonucu = Rules.per_dogrula(secilen_taslar, game.mevcut_gorev)
         else:
             dogrulama_sonucu = Rules.genel_per_dogrula(secilen_taslar)
+
         if dogrulama_sonucu:
+            game.oyuncu_hamle_yapti[oyuncu_index] = True # Oyuncunun bu tur hamle yaptığını işaretle
             if is_ilk_acilis:
                 game.acilmis_oyuncular[oyuncu_index] = True
                 game.ilk_el_acan_tur[oyuncu_index] = game.tur_numarasi
@@ -86,30 +93,27 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def islem_yap(game, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
+        # Bir turda birden fazla kez per açmayı veya işlemeyi engelle
+        if game.oyuncu_hamle_yapti[isleyen_oyuncu_idx]:
+            logger.warning(f"Oyuncu {isleyen_oyuncu_idx} bu tur zaten hamle yaptı.")
+            return False
+
         el_acan_tur = game.ilk_el_acan_tur.get(isleyen_oyuncu_idx)
         if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:
             logger.warning(f"Oyuncu {isleyen_oyuncu_idx} elini açtığı turda işleme yapamaz.")
             return False
+
         if not game.acilmis_oyuncular[isleyen_oyuncu_idx] or isleyen_oyuncu_idx != game.sira_kimde_index:
             return False
+            
         oyuncu = game.oyuncular[isleyen_oyuncu_idx]
         tas = next((t for t in oyuncu.el if t.id == tas_id), None)
         if not tas: return False
+        
         per = game.acilan_perler[per_sahibi_idx][per_idx]
-        for i, per_tasi in enumerate(per):
-            if per_tasi.renk == "joker" and per_tasi.joker_yerine_gecen:
-                yerine_gecen = per_tasi.joker_yerine_gecen
-                if yerine_gecen.renk == tas.renk and yerine_gecen.deger == tas.deger:
-                    joker = per.pop(i)
-                    joker.joker_yerine_gecen = None
-                    oyuncu.tas_al(joker)
-                    oyuncu.tas_at(tas.id)
-                    per.append(tas)
-                    oyuncu.el_sirala()
-                    game._per_sirala(per)
-                    game.oyun_durumu = GameState.NORMAL_TAS_ATMA
-                    return True
+        
         if Rules.islem_dogrula(per, tas):
+            game.oyuncu_hamle_yapti[isleyen_oyuncu_idx] = True # Oyuncunun bu tur hamle yaptığını işaretle
             oyuncu.tas_at(tas.id)
             per.append(tas)
             game._per_sirala(per)
