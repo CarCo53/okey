@@ -24,17 +24,28 @@ class AIPlayer(Player):
     @logger.log_function
     def atilan_tasi_degerlendir(self, oyun, atilan_tas):
         my_index = oyun.oyuncular.index(self)
+        # Eğer elini açtıysa ve işleyebiliyorsa alsın
         if oyun.acilmis_oyuncular[my_index]:
             if self.ai_islem_yap_dene(oyun, ek_tas=atilan_tas):
                 logger.info(f"AI {self.isim} masaya işleyebileceği için taşı alıyor: {atilan_tas}")
                 return True
+        
+        # Eğer görev 'Çift' ise ve elinde o taşın eşi varsa alsın (YENİ KOD)
+        if oyun.mevcut_gorev == "Çift":
+            for tas in self.el:
+                if tas.renk != "joker" and tas.renk == atilan_tas.renk and tas.deger == atilan_tas.deger:
+                    logger.info(f"AI {self.isim} 'Çift' görevi için atılan taşı alıyor: {atilan_tas}")
+                    return True
+
+        # Normal perler için ihtiyacı varsa alsın (mevcut mantık)
         self._elini_yeniden_degerlendir(oyun)
         aranan_tas = (atilan_tas.renk, atilan_tas.deger)
         if aranan_tas in self.ihtiyac_listesi:
              logger.info(f"AI {self.isim} planı dahilindeki taşı alıyor: {atilan_tas}")
              return True
-        return False
 
+        return False
+    
     @logger.log_function
     def ai_el_ac_dene(self, oyun):
         gorev = oyun.mevcut_gorev

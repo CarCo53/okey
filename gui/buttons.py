@@ -42,8 +42,9 @@ class ButtonManager:
                 self.butonlar["yerden_al"].config(state=tk.NORMAL)
                 self.butonlar["gec"].config(state=tk.NORMAL)
         elif oyun_durumu == GameState.NORMAL_TAS_ATMA and sira_bende:
-            self.butonlar["el_ac"].config(state=tk.NORMAL)
             self.butonlar["tas_at"].config(state=tk.NORMAL)
+            # Düzeltme: Yalnızca taş atma butonu aktif olmalı
+            # self.butonlar["el_ac"].config(state=tk.NORMAL)
         elif oyun_durumu == GameState.BITIS:
             self.butonlar["yeni_oyun"].config(state=tk.NORMAL)
 

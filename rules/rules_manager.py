@@ -63,9 +63,26 @@ class Rules:
     def _seri_islem_dogrula(per, tas):
         per_rengi = next((t.renk for t in per if t.renk != "joker"), None)
         sayilar = sorted([t.deger for t in per if t.renk != "joker"])
+        
         if tas.renk == "joker": return True
         if per_rengi and tas.renk != per_rengi: return False
         if not sayilar: return True
-        is_dongusel = 1 in sayilar and 13 in sayilar
-        if is_dongusel: return False # 12-13-1 gibi perlere isleme yapılamaz
-        return tas.deger == sayilar[0] - 1 or tas.deger == sayilar[-1] + 1
+
+        en_kucuk = sayilar[0]
+        en_buyuk = sayilar[-1]
+
+        # Seriye eklenebilecek taşlar
+        if tas.deger == en_kucuk - 1 or tas.deger == en_buyuk + 1:
+            return True
+        
+        # Döngüsel serinin başına veya sonuna ekleme
+        if en_kucuk == 1 and en_buyuk == 13:
+            # 13-1 serisine 12 eklemek
+            if len(sayilar) == 2 and sayilar == [1, 13] and tas.deger == 12:
+                return True
+        elif en_kucuk == 1 and tas.deger == 13:
+             return True
+        elif en_buyuk == 13 and tas.deger == 1:
+            return True
+            
+        return False
