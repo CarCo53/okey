@@ -5,7 +5,7 @@ from gui.buttons import ButtonManager
 from gui.status import StatusBar
 from core.game_state import GameState
 from gui.arayuzguncelle import arayuzu_guncelle
-from engine.game_manager import Game 
+from engine.game_manager import Game
 from ai.ai_player import AIPlayer
 from log import logger
 
@@ -37,6 +37,9 @@ class Arayuz:
         self.alanlar['oyuncu_4'] = self._oyuncu_alani_olustur(oyuncu_cercevesi, "AI Oyuncu 4")
         self.masa_frame = tk.LabelFrame(self.pencere, text="Masa (Açılan Perler)", padx=10, pady=10)
         self.masa_frame.pack(pady=10, fill="both", expand=True)
+        # Yeni joker çerçevesini masa çerçevesinin altına ekle
+        self.joker_frame = tk.LabelFrame(self.pencere, text="Kullanılan Jokerler", padx=10, pady=10)
+        self.joker_frame.pack(pady=5, fill="x")
         deste_ve_atilan_cerceve = tk.Frame(self.pencere)
         deste_ve_atilan_cerceve.pack(pady=5)
         self.deste_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Deste", padx=5, pady=5)
@@ -73,7 +76,7 @@ class Arayuz:
             return
 
         secili_tas_id = self.secili_tas_idler[0]
-        
+
         # Önce joker değiştirmeyi dene
         sonuc_joker = self.oyun.joker_degistir(0, oyuncu_index, per_index, secili_tas_id)
         if sonuc_joker.get("status") == "success":
@@ -91,9 +94,9 @@ class Arayuz:
             # Her ikisi de başarısız olduysa hata mesajı göster
             hata_mesaji = sonuc_joker.get("message", "Geçersiz hamle!")
             self.statusbar.guncelle(hata_mesaji)
-            
+
         self.arayuzu_guncelle()
-            
+
     @logger.log_function
     def joker_secim_penceresi_ac(self, secenekler, joker, secilen_taslar):
         secim_penceresi = tk.Toplevel(self.pencere)
@@ -117,7 +120,7 @@ class Arayuz:
         self.oyun.el_ac_joker_ile(0, secilen_taslar, joker, secilen_deger)
         self.secili_tas_idler = []
         self.arayuzu_guncelle()
-    
+
 # gui/gui.py dosyasındaki ai_oynat fonksiyonunu bununla değiştirin.
 
     def ai_oynat(self):
@@ -138,7 +141,7 @@ class Arayuz:
                 else:
                     oyun.atilan_tasi_gecti()
                 self.arayuzu_guncelle()
-        
+
         # --- NORMAL TUR AKIŞI ---
         elif oyun.oyun_durumu in [GameState.NORMAL_TUR, GameState.NORMAL_TAS_ATMA]:
             sira_index = oyun.sira_kimde_index
@@ -153,14 +156,14 @@ class Arayuz:
 
                 # 2. HAMLE YAPMA
                 elini_acti_mi = oyun.acilmis_oyuncular[sira_index]
-                
+
                 # A. Henüz elini açmadıysa, açmayı dener
                 if not elini_acti_mi:
                     ac_kombo = ai_oyuncu.ai_el_ac_dene(oyun)
                     if ac_kombo:
                         oyun.el_ac(sira_index, ac_kombo)
                         self.arayuzu_guncelle()
-                
+
                 # B. Eli zaten açıksa ve işlem yapma sırası geldiyse
                 elif oyun.ilk_el_acan_tur.get(sira_index, -1) < oyun.tur_numarasi:
                     islem_yapildi = True
@@ -181,7 +184,7 @@ class Arayuz:
                         oyun.oyun_durumu = GameState.BITIS
                         oyun.kazanan_index = sira_index
                 self.arayuzu_guncelle()
-        
+
         self.pencere.after(750, self.ai_oynat)
     @logger.log_function
     def baslat(self):
