@@ -45,10 +45,7 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def el_ac(game, oyuncu_index, tas_id_list):
-        # Bir turda birden fazla kez per açmayı engelle
-        if game.oyuncu_hamle_yapti[oyuncu_index]:
-             return {"status": "fail", "message": "Bu tur zaten bir hamle yaptınız (per açma/işleme)."}
-            
+        # El açma her zaman serbest, hamle yapıldı durumunu bu kontrol etmemeli.
         oyuncu = game.oyuncular[oyuncu_index]
         secilen_taslar = [tas for tas in oyuncu.el if tas.id in tas_id_list]
         joker_kontrol_sonucu = JokerManager.el_ac_joker_kontrolu(game, oyuncu, secilen_taslar)
@@ -56,6 +53,7 @@ class ActionManager:
             return joker_kontrol_sonucu
         if joker_kontrol_sonucu["status"] == "invalid_joker_move":
             return {"status": "fail", "message": "Jokerle geçersiz per açamazsınız."}
+        
         return ActionManager._eli_ac_ve_isle(game, oyuncu_index, secilen_taslar)
 
     @staticmethod
@@ -70,7 +68,7 @@ class ActionManager:
             dogrulama_sonucu = Rules.genel_per_dogrula(secilen_taslar)
 
         if dogrulama_sonucu:
-            game.oyuncu_hamle_yapti[oyuncu_index] = True # Oyuncunun bu tur hamle yaptığını işaretle
+            # game.oyuncu_hamle_yapti[oyuncu_index] = True # Bu kontrol kaldırıldı
             if is_ilk_acilis:
                 game.acilmis_oyuncular[oyuncu_index] = True
                 game.ilk_el_acan_tur[oyuncu_index] = game.tur_numarasi
@@ -93,10 +91,10 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def islem_yap(game, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
-        # Bir turda birden fazla kez per açmayı veya işlemeyi engelle
-        if game.oyuncu_hamle_yapti[isleyen_oyuncu_idx]:
-             logger.warning(f"Oyuncu {isleyen_oyuncu_idx} bu tur zaten hamle yaptı.")
-             return False
+        # Bu kontrol kaldırıldı
+        # if game.oyuncu_hamle_yapti[isleyen_oyuncu_idx]:
+        #      logger.warning(f"Oyuncu {isleyen_oyuncu_idx} bu tur zaten hamle yaptı.")
+        #      return False
 
         el_acan_tur = game.ilk_el_acan_tur.get(isleyen_oyuncu_idx)
         if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:
@@ -113,7 +111,7 @@ class ActionManager:
         per = game.acilan_perler[per_sahibi_idx][per_idx]
         
         if Rules.islem_dogrula(per, tas):
-            game.oyuncu_hamle_yapti[isleyen_oyuncu_idx] = True # Oyuncunun bu tur hamle yaptığını işaretle
+            # game.oyuncu_hamle_yapti[isleyen_oyuncu_idx] = True # Bu kontrol kaldırıldı
             oyuncu.tas_at(tas.id)
             per.append(tas)
             game._per_sirala(per)

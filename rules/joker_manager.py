@@ -11,7 +11,10 @@ class JokerManager:
         jokerler = [t for t in taslar if t.renk == 'joker']
         diger_taslar = [t for t in taslar if t.renk != 'joker']
         if not jokerler: return {}
-        if len(jokerler) != 1: return None
+        # Sadece bir joker için seçim yapılır, birden fazla joker varsa bu durumu atla
+        if len(jokerler) != 1:
+            return None
+
         joker = jokerler[0]
         olasi_secimler = {}
         
@@ -40,15 +43,19 @@ class JokerManager:
             if sayilar[0] > 1: olasi_sayilar.add(sayilar[0] - 1)
             if sayilar[-1] < 13: olasi_sayilar.add(sayilar[-1] + 1)
             
-            # Döngüsel seri (12-13-1) durumunu kontrol et
-            if {1, 13}.issubset(sayilar):
-                if 12 not in sayilar: olasi_sayilar.add(12)
-                if 2 not in sayilar: olasi_sayilar.add(2)
+            # Döngüsel seri (12-13-1 gibi) durumunu kontrol et
+            if 1 in sayilar and 13 in sayilar:
+                if len(sayilar) > 2 and 12 not in sayilar:
+                    olasi_sayilar.add(12)
+                if sayilar[0] == 1 and sayilar[-1] == 13:
+                    if 12 not in sayilar: olasi_sayilar.add(12)
+                    if 2 not in sayilar: olasi_sayilar.add(2)
             
             if olasi_sayilar:
                 secenekler = [Tile(renk, s, f"{renk}_{s}.png", -1) for s in sorted(list(olasi_sayilar))]
                 if joker in olasi_secimler: olasi_secimler[joker].extend(secenekler)
                 else: olasi_secimler[joker] = secenekler
+
         return olasi_secimler if olasi_secimler else None
 
     @staticmethod
@@ -56,18 +63,31 @@ class JokerManager:
     def el_ac_joker_kontrolu(oyun, oyuncu, secilen_taslar):
         jokerler = [t for t in secilen_taslar if t.renk == 'joker']
         if not jokerler: return {"status": "no_joker"}
+        
+        # Sadece per doğrulaması yapıyoruz, jokerin atanması için değil.
+        # AI oyuncular için özel bir durum olabilir ancak insan oyuncu için her zaman sorulmalı.
         gecerli_mi = Rules.per_dogrula(secilen_taslar, oyun.mevcut_gorev) or Rules.genel_per_dogrula(secilen_taslar)
+        
         olasi_secimler = JokerManager.joker_icin_olasi_taslar(secilen_taslar)
-        if not olasi_secimler:
-            return {"status": "invalid_joker_move"} if not gecerli_mi else {"status": "no_choice_needed"}
-        for joker, secenekler in olasi_secimler.items():
-            if isinstance(oyuncu, AIPlayer):
-                if secenekler:
-                    joker.joker_yerine_gecen = secenekler[0]
+        
+        # Eğer per geçerli ve tek bir joker varsa, seçenekleri kontrol et.
+        if gecerli_mi and len(jokerler) == 1:
+            if olasi_secimler and len(olasi_secimler.get(jokerler[0], [])) > 1:
+                return {"status": "joker_choice_needed", "options": olasi_secimler[jokerler[0]], "joker": jokerler[0], "secilen_taslar": secilen_taslar}
+            elif olasi_secimler and len(olasi_secimler.get(jokerler[0], [])) == 1:
+                jokerler[0].joker_yerine_gecen = olasi_secimler[jokerler[0]][0]
                 return {"status": "auto_assigned"}
-            elif len(secenekler) > 1:
-                return {"status": "joker_choice_needed", "options": secenekler, "joker": joker, "secilen_taslar": secilen_taslar}
-            elif len(secenekler) == 1:
-                joker.joker_yerine_gecen = secenekler[0]
-                return {"status": "auto_assigned"}
+            elif not olasi_secimler:
+                # Sadece jokerle açılan durumlarda (örn: 3 jokerden küt 3), jokerin ne olduğunu sormasına gerek yok.
+                # Ancak bu durumları daha net belirlemek gerek. Şimdilik bu varsayımla devam edelim.
+                return {"status": "no_choice_needed"}
+
+        if isinstance(oyuncu, AIPlayer) and olasi_secimler and olasi_secimler.get(jokerler[0]):
+             jokerler[0].joker_yerine_gecen = olasi_secimler[jokerler[0]][0]
+             return {"status": "auto_assigned"}
+
+        # Hiç joker yoksa veya joker geçerli bir per oluşturmuyorsa
+        if not gecerli_mi:
+            return {"status": "invalid_joker_move", "message": "Joker ile geçersiz per açamazsınız."}
+            
         return {"status": "no_choice_needed"}

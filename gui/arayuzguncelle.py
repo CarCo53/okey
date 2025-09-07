@@ -65,7 +65,7 @@ def arayuzu_guncelle(arayuz):
                             # Jokerin üzerine tıklandığında da per_sec tetiklensin
                             label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
                     else: # Joker, yerine geçen taşı yoksa
-                        img_adi = "joker.png"  # Varsayılan joker görseli
+                        img_adi = "fake_okey.png" # Joker görseli
                         img = arayuz.visuals.tas_resimleri.get(img_adi)
                         if img:
                             label = tk.Label(per_cerceve_dis, image=img, borderwidth=0)
@@ -80,15 +80,16 @@ def arayuzu_guncelle(arayuz):
                         label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
 
     # Kullanılan Jokerleri yeni alanda göster
-    for joker_tas in kullanilan_jokerler:
-        img_ana = arayuz.visuals.tas_resimleri.get("joker.png")
-        img_yerine_gecen = arayuz.visuals.tas_resimleri.get(joker_tas.joker_yerine_gecen.imaj_adi)
-        if img_ana and img_yerine_gecen:
-            joker_cerceve = tk.Frame(arayuz.joker_frame, borderwidth=1, relief="solid", padx=2, pady=2)
-            joker_cerceve.pack(side=tk.LEFT, padx=5)
-            tk.Label(joker_cerceve, image=img_ana).pack(side=tk.LEFT, padx=2)
-            tk.Label(joker_cerceve, text=" -> ", font=("Arial", 12)).pack(side=tk.LEFT, padx=2)
-            tk.Label(joker_cerceve, image=img_yerine_gecen).pack(side=tk.LEFT, padx=2)
+    if kullanilan_jokerler:
+        for joker_tas in kullanilan_jokerler:
+            img_ana = arayuz.visuals.tas_resimleri.get("fake_okey.png")
+            img_yerine_gecen = arayuz.visuals.tas_resimleri.get(joker_tas.joker_yerine_gecen.imaj_adi)
+            if img_ana and img_yerine_gecen:
+                joker_cerceve = tk.Frame(arayuz.joker_frame, borderwidth=1, relief="solid", padx=2, pady=2)
+                joker_cerceve.pack(side=tk.LEFT, padx=5)
+                tk.Label(joker_cerceve, image=img_ana).pack(side=tk.LEFT, padx=2)
+                tk.Label(joker_cerceve, text=" -> ", font=("Arial", 12)).pack(side=tk.LEFT, padx=2)
+                tk.Label(joker_cerceve, image=img_yerine_gecen).pack(side=tk.LEFT, padx=2)
             
     # Deste ve Atılan taşlar
     for widget in arayuz.deste_frame.winfo_children():
