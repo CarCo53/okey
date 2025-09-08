@@ -13,6 +13,7 @@ class AtilanTasDegerlendirici:
         self.tasi_atan_index = tasi_atan_index
         self.oyuncu_sayisi = oyuncu_sayisi
         self.degerlendiren_index = (tasi_atan_index + 1) % oyuncu_sayisi
+    @logger.log_function
     def siradaki(self):
         return self.degerlendiren_index
     @logger.log_function

@@ -11,6 +11,7 @@ FILES_TO_IGNORE = [os.path.basename(__file__), 'log.py']
 FUNCTIONS_TO_IGNORE = [
     'Arayuz.ai_oynat',
     'Game.oyun_bitti_mi',
+    'Rules.per_dogrula',
 ]
 # --- AYARLAR ---
 

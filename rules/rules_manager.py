@@ -7,7 +7,6 @@ from log import logger
 class Rules:
     GOREVLER = GOREV_LISTESI
     @staticmethod
-    @logger.log_function
     def per_dogrula(taslar, gorev):
         if gorev == "Küt 3": return len(taslar) == 3 and kut_mu(taslar, 3)
         if gorev == "Seri 3": return len(taslar) == 3 and seri_mu(taslar, 3)

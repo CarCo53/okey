@@ -4,6 +4,7 @@ import tkinter as tk
 from core.game_state import GameState
 from log import logger
 
+@logger.log_function
 def arayuzu_guncelle(arayuz):
     oyun = arayuz.oyun
     # Oyuncu ellerini güncelle
