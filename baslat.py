@@ -6,8 +6,11 @@ import random
 from log import logger
 
 @logger.log_function
-def baslat_oyun(game):
-    game.mevcut_gorev = random.choice(Rules.GOREVLER)
+def baslat_oyun(game, gorev=None):
+    if gorev and gorev in Rules.GOREVLER:
+        game.mevcut_gorev = gorev
+    else:
+        game.mevcut_gorev = random.choice(Rules.GOREVLER)
     game.kazanan_index = None
     game.deste.olustur()
     game.deste.karistir()

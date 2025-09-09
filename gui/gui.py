@@ -38,10 +38,10 @@ class Arayuz:
         self.masa_frame = tk.LabelFrame(self.pencere, text="Masa (Açılan Perler)", padx=10, pady=10)
         self.masa_frame.pack(pady=10, fill="both", expand=True)
         # Yeni joker çerçevesini masa çerçevesinin altına ekle
-        self.joker_frame = tk.LabelFrame(self.pencere, text="Kullanılan Jokerler", padx=10, pady=10)
-        self.joker_frame.pack(pady=5, fill="x")
         deste_ve_atilan_cerceve = tk.Frame(self.pencere)
         deste_ve_atilan_cerceve.pack(pady=5)
+        self.joker_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Kullanılan Jokerler", padx=5, pady=5)
+        self.joker_frame.pack(side=tk.LEFT, padx=10)
         self.deste_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Deste", padx=5, pady=5)
         self.deste_frame.pack(side=tk.LEFT, padx=10)
         self.atilan_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Atılan Taşlar", padx=5, pady=5)
@@ -56,7 +56,6 @@ class Arayuz:
         frame.pack(pady=2, fill="x")
         return frame
 
-    @logger.log_function
     def arayuzu_guncelle(self):
         arayuzu_guncelle(self)
 
@@ -165,15 +164,25 @@ class Arayuz:
                         self.arayuzu_guncelle()
 
                 # B. Eli zaten açıksa ve işlem yapma sırası geldiyse
-                elif oyun.ilk_el_acan_tur.get(sira_index, -1) < oyun.tur_numarasi:
+                if elini_acti_mi and oyun.ilk_el_acan_tur.get(sira_index, -1) < oyun.tur_numarasi:
                     islem_yapildi = True
                     while islem_yapildi: # İşlenecek taş kalmayana kadar döner
                         islem_hamlesi = ai_oyuncu.ai_islem_yap_dene(oyun)
                         if islem_hamlesi:
-                            oyun.islem_yap(sira_index, islem_hamlesi['sahip_idx'], islem_hamlesi['per_idx'], islem_hamlesi['tas_id'])
+                            if islem_hamlesi.get("action_type") == "joker_degistir":
+                                oyun.joker_degistir(sira_index, islem_hamlesi['sahip_idx'], islem_hamlesi['per_idx'], islem_hamlesi['tas_id'])
+                            elif islem_hamlesi.get("action_type") == "islem_yap":
+                                oyun.islem_yap(sira_index, islem_hamlesi['sahip_idx'], islem_hamlesi['per_idx'], islem_hamlesi['tas_id'])
                             self.arayuzu_guncelle()
                         else:
                             islem_yapildi = False
+                
+                # C. Yeni per açma (El zaten açıkken)
+                elif elini_acti_mi:
+                    ac_kombo = ai_oyuncu.ai_el_ac_dene(oyun)
+                    if ac_kombo:
+                        oyun.el_ac(sira_index, ac_kombo)
+                        self.arayuzu_guncelle()
 
                 # 3. TAŞ ATMA
                 if ai_oyuncu.el:

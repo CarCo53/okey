@@ -12,6 +12,9 @@ FUNCTIONS_TO_IGNORE = [
     'Arayuz.ai_oynat',
     'Game.oyun_bitti_mi',
     'Rules.per_dogrula',
+    'Arayuz.arayuzu_guncelle',
+    'Rules.islem_dogrula',
+    'Deck.olustur',
 ]
 # --- AYARLAR ---
 

@@ -70,14 +70,20 @@ class ActionManager:
             if is_ilk_acilis:
                 game.acilmis_oyuncular[oyuncu_index] = True
                 game.ilk_el_acan_tur[oyuncu_index] = game.tur_numarasi
-            for tas in secilen_taslar:
-                oyuncu.tas_at(tas.id)
+            
+            # Eğer karma per açma durumu varsa
             if isinstance(dogrulama_sonucu, tuple):
-                for per in dogrulama_sonucu: game._per_sirala(per)
-                game.acilan_perler[oyuncu_index].extend(dogrulama_sonucu)
+                for per in dogrulama_sonucu:
+                    for tas in per:
+                        oyuncu.tas_at(tas.id)
+                    game._per_sirala(per)
+                    game.acilan_perler[oyuncu_index].append(per)
             else: 
+                for tas in secilen_taslar:
+                    oyuncu.tas_at(tas.id)
                 game._per_sirala(secilen_taslar)
                 game.acilan_perler[oyuncu_index].append(secilen_taslar)
+
             oyuncu.el_sirala()
             game.oyun_durumu = GameState.NORMAL_TAS_ATMA
             return {"status": "success"}
@@ -89,12 +95,16 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def islem_yap(game, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
+        # Yalnızca sıra kendisindeyken işlem yapabilir
+        if isleyen_oyuncu_idx != game.sira_kimde_index:
+            return False
+
         el_acan_tur = game.ilk_el_acan_tur.get(isleyen_oyuncu_idx)
         if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:
             logger.warning(f"Oyuncu {isleyen_oyuncu_idx} elini açtığı turda işleme yapamaz.")
             return False
 
-        if not game.acilmis_oyuncular[isleyen_oyuncu_idx] or isleyen_oyuncu_idx != game.sira_kimde_index:
+        if not game.acilmis_oyuncular[isleyen_oyuncu_idx]:
             return False
             
         oyuncu = game.oyuncular[isleyen_oyuncu_idx]

@@ -9,7 +9,6 @@ class ButtonManager:
         self.arayuz = arayuz
         self.butonlar = {}
 
-    @logger.log_function
     def ekle_butonlar(self, parent):
         frame = tk.Frame(parent)
         frame.pack(pady=10)
@@ -23,7 +22,7 @@ class ButtonManager:
         for btn in self.butonlar.values():
             btn.pack(side=tk.LEFT, padx=8)
 
-    @logger.log_function
+    
     def butonlari_guncelle(self, oyun_durumu):
         for btn in self.butonlar.values():
             btn.config(state=tk.DISABLED)
@@ -47,7 +46,7 @@ class ButtonManager:
         elif oyun_durumu == GameState.BITIS:
             self.butonlar["yeni_oyun"].config(state=tk.NORMAL)
 
-    @logger.log_function
+    
     def yerden_al(self):
         self.arayuz.oyun.atilan_tasi_al(0)
         self.arayuz.arayuzu_guncelle()

@@ -8,7 +8,6 @@ class Deck:
     @logger.log_function
     def __init__(self):
         self.taslar = []
-    @logger.log_function
     def olustur(self):
         self.taslar = []
         renkler = ["sari", "mavi", "siyah", "kirmizi"]

@@ -31,8 +31,8 @@ class Game:
         self.oyuncu_hamle_yapti = [False] * len(self.oyuncular)
 
     @logger.log_function
-    def baslat(self):
-        baslat_oyun(self)
+    def baslat(self, gorev=None):
+        baslat_oyun(self, gorev)
     
     @logger.log_function
     def el_ac(self, oyuncu_index, tas_id_list):
