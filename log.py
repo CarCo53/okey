@@ -1,5 +1,6 @@
 import logging
 from functools import wraps
+import os
 
 class CentralLogger:
     def __init__(self, name="okey_logger", log_file="game.log"):
@@ -20,10 +21,12 @@ class CentralLogger:
 
         self.logger.addHandler(ch)
         self.logger.addHandler(fh)
+    
     def info(self, msg): self.logger.info(msg)
     def warning(self, msg): self.logger.warning(msg)
     def error(self, msg): self.logger.error(msg)
     def debug(self, msg): self.logger.debug(msg)
+    
     def log_function(self, func):
         @wraps(func)
         def wrapper(*args, **kwargs):
@@ -33,8 +36,11 @@ class CentralLogger:
                 self.logger.info(f"RETURN {func.__qualname__} -> {result}")
                 return result
             except Exception as e:
-                self.logger.error(f"ERROR in {func.__qualname__}: {e}", exc_info=True)
+                self.logger.error(f"ERROR in {func.__qualname__}: {e}")
+                import traceback
+                self.logger.error(traceback.format_exc())
                 raise
         return wrapper
 
+# Global logger instance
 logger = CentralLogger()

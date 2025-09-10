@@ -77,7 +77,7 @@ class ActionManager:
                     for tas in per:
                         oyuncu.tas_at(tas.id)
                     game._per_sirala(per)
-                    game.acilan_perler[oyuncu_index].append(per)
+                    game.acilan_perler[oyuncu_index].extend(dogrulama_sonucu)
             else: 
                 for tas in secilen_taslar:
                     oyuncu.tas_at(tas.id)
@@ -95,16 +95,12 @@ class ActionManager:
     @staticmethod
     @logger.log_function
     def islem_yap(game, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
-        # Yalnızca sıra kendisindeyken işlem yapabilir
-        if isleyen_oyuncu_idx != game.sira_kimde_index:
-            return False
-
         el_acan_tur = game.ilk_el_acan_tur.get(isleyen_oyuncu_idx)
         if el_acan_tur is not None and game.tur_numarasi <= el_acan_tur:
             logger.warning(f"Oyuncu {isleyen_oyuncu_idx} elini açtığı turda işleme yapamaz.")
             return False
 
-        if not game.acilmis_oyuncular[isleyen_oyuncu_idx]:
+        if not game.acilmis_oyuncular[isleyen_oyuncu_idx] or isleyen_oyuncu_idx != game.sira_kimde_index:
             return False
             
         oyuncu = game.oyuncular[isleyen_oyuncu_idx]

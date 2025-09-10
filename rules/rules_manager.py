@@ -88,24 +88,27 @@ class Rules:
 
         tas_degeri = tas.deger
 
-        # Taş, per'e eklenebilir mi?
+        # Normal seriye ekleme kuralları
         if tas_degeri == sayilar[0] - 1 or tas_degeri == sayilar[-1] + 1:
             return True
         
-        # Döngüsel seriye ekleme kuralları
+        # Döngüsel seri kontrolü: 12-13-1 serisine 2 eklenemez.
+        # ve 1-2-3 serisine 13 eklenemez.
         if 1 in sayilar and 13 in sayilar:
-            if tas_degeri == 12 or tas_degeri == 2:
-                # 13-1 serisine 12 veya 2 ekleyemezsin. 13-1-2 diye bir seri olmaz.
-                return False
-            # 1-13-12 serisi
-            elif 12 in sayilar and tas_degeri == 11:
+            # Özel durum: 13-1 serisine 12 eklemek.
+            if len(sayilar) == 2 and sayilar[0] == 1 and sayilar[-1] == 13 and tas_degeri == 12:
                 return True
-        elif tas_degeri == 1 and 13 in sayilar: # 1-2-13
-            # Kurala göre 1-2-3'e 13 işlenemez.
-            return False
-        elif tas_degeri == 13 and 1 in sayilar: # 13-1-2
-             # Kurala göre 12-13-1 den sonra 2 gelemez.
-            if len(sayilar) > 1 and sayilar[0] == 1 and sayilar[-1] == 13: return False
-            return True
+            # Kural 1: 1-2-3 serisine 13 eklenemez.
+            if len(sayilar) >= 3 and sayilar[:3] == [1, 2, 3] and tas_degeri == 13:
+                 return False
+            # Kural 2: 12-13-1 serisine 2 eklenemez.
+            if len(sayilar) >= 3 and sayilar[-3:] == [12, 13, 14] and tas_degeri == 2:
+                return False
 
+        # Kurala aykırı döngüsel eklemeler (Kılavuzda belirtildiği gibi)
+        if tas_degeri == 13 and 1 in sayilar and 2 in sayilar:
+            return False
+        if tas_degeri == 1 and 12 in sayilar and 13 in sayilar:
+             return False
+        
         return False

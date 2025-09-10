@@ -13,7 +13,7 @@ from log import logger
 class Game:
     @logger.log_function
     def __init__(self):
-        self.oyuncular = [Player("Oyuncu 1 (Siz)"), AIPlayer("AI Oyuncu 2"), AIPlayer("AI Oyuncu 3"), AIPlayer("AI Oyuncu 4")]
+        self.oyuncular = [Player("Oyuncu 1 (Siz)", 0), AIPlayer("AI Oyuncu 2", 1), AIPlayer("AI Oyuncu 3", 2), AIPlayer("AI Oyuncu 4", 3)]
         self.deste = Deck()
         self.atilan_taslar = []
         self.sira_kimde_index = 0

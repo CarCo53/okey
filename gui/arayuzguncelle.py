@@ -4,7 +4,6 @@ import tkinter as tk
 from core.game_state import GameState
 from log import logger
 
-@logger.log_function
 def arayuzu_guncelle(arayuz):
     oyun = arayuz.oyun
     # Oyuncu ellerini güncelle
@@ -27,14 +26,7 @@ def arayuzu_guncelle(arayuz):
     # Masa (Açılan Perler) alanını temizle
     for widget in arayuz.masa_frame.winfo_children():
         widget.destroy()
-    
-    # Kullanılan Jokerler alanını temizle
-    for widget in arayuz.joker_frame.winfo_children():
-        widget.destroy()
-    
-    # Yeni kullanılan jokerleri gösteren listeyi oluştur
-    kullanilan_jokerler = []
-    
+
     # Açılan perleri yeniden çiz
     for oyuncu_idx, per_listesi in oyun.acilan_perler.items():
         if not per_listesi: continue
@@ -51,27 +43,19 @@ def arayuzu_guncelle(arayuz):
 
             for tas in per:
                 # Joker ise yerine geçen taşı göster ve çerçevele
-                if tas.renk == 'joker':
-                    if tas.joker_yerine_gecen:
-                        kullanilan_jokerler.append(tas)
-                        img_adi = tas.joker_yerine_gecen.imaj_adi
-                        img = arayuz.visuals.tas_resimleri.get(img_adi)
+                if tas.joker_yerine_gecen:
+                    img_adi = tas.joker_yerine_gecen.imaj_adi
+                    img = arayuz.visuals.tas_resimleri.get(img_adi)
+                    
+                    # Jokeri belirtmek için özel çerçeve
+                    tas_cerceve = tk.Frame(per_cerceve_dis, bg="gold", borderwidth=2, relief="groove")
+                    tas_cerceve.pack(side=tk.LEFT, padx=1, pady=1)
+                    if img:
+                        label = tk.Label(tas_cerceve, image=img, borderwidth=0)
+                        label.pack()
+                        # Jokerin üzerine tıklandığında da per_sec tetiklensin
+                        label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
 
-                        # Jokeri belirtmek için özel çerçeve
-                        tas_cerceve = tk.Frame(per_cerceve_dis, bg="gold", borderwidth=2, relief="groove")
-                        tas_cerceve.pack(side=tk.LEFT, padx=1, pady=1)
-                        if img:
-                            label = tk.Label(tas_cerceve, image=img, borderwidth=0)
-                            label.pack()
-                            # Jokerin üzerine tıklandığında da per_sec tetiklensin
-                            label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
-                    else: # Joker, yerine geçen taşı yoksa
-                        img_adi = "fake_okey.png" # Joker görseli
-                        img = arayuz.visuals.tas_resimleri.get(img_adi)
-                        if img:
-                            label = tk.Label(per_cerceve_dis, image=img, borderwidth=0)
-                            label.pack(side=tk.LEFT, padx=1, pady=1)
-                            label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
                 else: # Normal taş ise
                     img = arayuz.visuals.tas_resimleri.get(tas.imaj_adi)
                     if img:
@@ -80,18 +64,7 @@ def arayuzu_guncelle(arayuz):
                         # Normal taşların üzerine tıklandığında da per_sec tetiklensin
                         label.bind("<Button-1>", lambda e, o_idx=oyuncu_idx, p_idx=per_idx: arayuz.per_sec(o_idx, p_idx))
 
-    # Kullanılan Jokerleri yeni alanda göster
-    if kullanilan_jokerler:
-        for joker_tas in kullanilan_jokerler:
-            img_ana = arayuz.visuals.tas_resimleri.get("fake_okey.png")
-            img_yerine_gecen = arayuz.visuals.tas_resimleri.get(joker_tas.joker_yerine_gecen.imaj_adi)
-            if img_ana and img_yerine_gecen:
-                joker_cerceve = tk.Frame(arayuz.joker_frame, borderwidth=1, relief="solid", padx=2, pady=2)
-                joker_cerceve.pack(side=tk.LEFT, padx=5)
-                tk.Label(joker_cerceve, image=img_ana).pack(side=tk.LEFT, padx=2)
-                tk.Label(joker_cerceve, text=" -> ", font=("Arial", 12)).pack(side=tk.LEFT, padx=2)
-                tk.Label(joker_cerceve, image=img_yerine_gecen).pack(side=tk.LEFT, padx=2)
-            
+
     # Deste ve Atılan taşlar
     for widget in arayuz.deste_frame.winfo_children():
          if widget != arayuz.deste_sayisi_label:

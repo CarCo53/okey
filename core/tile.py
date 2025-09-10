@@ -1,18 +1,28 @@
-from log import logger
 # core/tile.py
+import uuid
+from log import logger
+
 class Tile:
+    RENK_SIRALAMASI = {"sari": 0, "mavi": 1, "siyah": 2, "kirmizi": 3, "joker": 4}
+
     @logger.log_function
-    def __init__(self, renk, deger, imaj_adi, id):
+    def __init__(self, renk, deger, imaj_adi):
+        self.id = uuid.uuid4().int >> 64
         self.renk = renk
         self.deger = deger
         self.imaj_adi = imaj_adi
-        self.id = id
-        self.joker_yerine_gecen = None 
+        self.joker_yerine_gecen = None
+        self.renk_sira = self.RENK_SIRALAMASI.get(self.renk)
 
-    @logger.log_function
     def __repr__(self):
-        if self.joker_yerine_gecen:
-            return f"Okey(yerine={self.joker_yerine_gecen.renk}_{self.joker_yerine_gecen.deger})"
         if self.renk == "joker":
             return f"Joker({self.id})"
         return f"{self.renk}_{self.deger}_{self.id}"
+
+    def __eq__(self, other):
+        if not isinstance(other, Tile):
+            return NotImplemented
+        return self.id == other.id
+
+    def __hash__(self):
+        return hash(self.id)

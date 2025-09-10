@@ -3,9 +3,7 @@
 from itertools import combinations
 from rules.rules_manager import Rules
 from collections import defaultdict
-from log import logger
 
-@logger.log_function
 def en_iyi_per_bul(el, gorev):
     """
     Yapay zekanın elindeki taşlardan görevle uyumlu en iyi (en çok taş içeren)

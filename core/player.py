@@ -1,27 +1,29 @@
 # core/player.py
-from core.tile import Tile
 from log import logger
+from core.tile import Tile
 
 class Player:
     @logger.log_function
-    def __init__(self, isim):
+    def __init__(self, isim, index):
         self.isim = isim
         self.el = []
+        self.index = index
+        self.acilmis_perler = []
+    
     @logger.log_function
-    def tas_al(self, tas: 'Tile'):
-        if tas: self.el.append(tas)
+    def tas_al(self, tas: Tile):
+        self.el.append(tas)
+        self.el_sirala()
+
     @logger.log_function
     def tas_at(self, tas_id):
-        for i, tas in enumerate(self.el):
-            if tas.id == tas_id: return self.el.pop(i)
+        atilan_tas = next((t for t in self.el if t.id == tas_id), None)
+        if atilan_tas:
+            self.el.remove(atilan_tas)
+            self.el_sirala()
+            return atilan_tas
         return None
+
     @logger.log_function
     def el_sirala(self):
-        @logger.log_function
-        def sort_key(t):
-            if t.renk == "joker": return (5, 0, 0)
-            renk_map = {"kirmizi": 0, "mavi": 1, "siyah": 2, "sari": 3}
-            val = t.deger or 0
-            is_bir = 1 if val == 1 else 0
-            return (renk_map.get(t.renk, 4), is_bir, val)
-        self.el.sort(key=sort_key)
+        self.el.sort(key=lambda t: (t.renk_sira, t.deger))

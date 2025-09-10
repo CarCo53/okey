@@ -35,16 +35,15 @@ class ButtonManager:
         elif oyun_durumu == GameState.NORMAL_TUR and sira_bende:
             self.butonlar["el_ac"].config(state=tk.NORMAL)
             self.butonlar["desteden_cek"].config(state=tk.NORMAL)
+        elif oyun_durumu == GameState.NORMAL_TAS_ATMA and sira_bende:
+            self.butonlar["tas_at"].config(state=tk.NORMAL)
+            self.butonlar["el_ac"].config(state=tk.NORMAL)
+            
         elif oyun_durumu == GameState.ATILAN_TAS_DEGERLENDIRME:
             degerlendiren_ben_miyim = oyun.atilan_tas_degerlendirici and oyun.atilan_tas_degerlendirici.siradaki() == 0
             if degerlendiren_ben_miyim:
                 self.butonlar["yerden_al"].config(state=tk.NORMAL)
                 self.butonlar["gec"].config(state=tk.NORMAL)
-        elif oyun_durumu == GameState.NORMAL_TAS_ATMA and sira_bende:
-            self.butonlar["tas_at"].config(state=tk.NORMAL)
-            self.butonlar["el_ac"].config(state=tk.NORMAL)
-        elif oyun_durumu == GameState.BITIS:
-            self.butonlar["yeni_oyun"].config(state=tk.NORMAL)
 
     
     def yerden_al(self):
