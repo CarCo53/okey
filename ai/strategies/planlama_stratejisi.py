@@ -15,29 +15,6 @@ def _get_oyundaki_taslar(perler):
     return oyundaki_taslar
 
 @logger.log_function
-def _get_potansiyel_perler(el):
-    potansiyel_perler = {"seri": [], "kut": []}
-    
-    # Seri per potansiyelleri
-    el_siyah = sorted([t for t in el if t.renk == 'siyah'], key=lambda x: x.deger)
-    el_kirmizi = sorted([t for t in el if t.renk == 'kirmizi'], key=lambda x: x.deger)
-    el_sari = sorted([t for t in el if t.renk == 'sari'], key=lambda x: x.deger)
-    el_mavi = sorted([t for t in el if t.renk == 'mavi'], key=lambda x: x.deger)
-    
-    for renk_listesi in [el_siyah, el_kirmizi, el_sari, el_mavi]:
-        for i in range(len(renk_listesi) - 1):
-            if renk_listesi[i+1].deger - renk_listesi[i].deger <= 2:
-                potansiyel_perler["seri"].append((renk_listesi[i], renk_listesi[i+1]))
-
-    # Küt per potansiyelleri
-    for deger in range(1, 14):
-        ayni_degerde_taslar = [t for t in el if t.deger == deger]
-        if len(ayni_degerde_taslar) >= 2:
-             potansiyel_perler["kut"].append(tuple(ayni_degerde_taslar))
-
-    return potansiyel_perler
-
-@logger.log_function
 def eli_analiz_et(el):
     el_analizi = {
         "ciftler": [],

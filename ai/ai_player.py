@@ -16,41 +16,48 @@ class AIPlayer(Player):
 
     @logger.log_function
     def atilan_tasi_degerlendir(self, game, atilan_tas):
-        self.oyun_analizi = eli_analiz_et(self.el)
-        
-        # Kendi elini açmış bir oyuncu için, işine yarayan her taşı al
+        # Elini açmış bir oyuncu için atılan taşı değerlendir
         if game.acilmis_oyuncular[self.index]:
-            perler = game.acilan_perler[self.index]
-            for per_idx, per in enumerate(perler):
+            for per_idx, per in enumerate(game.acilan_perler[self.index]):
                 if Rules.islem_dogrula(per, atilan_tas):
-                    logger.info(f"AI {self.index} planı dahilindeki taşı alıyor: {atilan_tas}")
-                    return True
-
-        # Elini açmamış bir oyuncu için strateji:
-        # 1. Eğer per yapma potansiyeli varsa
-        for per_tipi, per_listesi in self.oyun_analizi.get('ikili_potansiyeller', {}).items():
-            for potansiyel_per in per_listesi:
-                if atilan_tas in potansiyel_per:
-                    logger.info(f"AI {self.index} per yapma potansiyeli için taşı alıyor: {atilan_tas}")
+                    logger.info(f"AI {self.isim} açılmış perine taş eklemek için atılan taşı alıyor: {atilan_tas.renk}_{atilan_tas.deger}")
                     return True
         
-        logger.info(f"AI {self.index} atılan taşı değerlendiriyor. Almadı.")
+        # Elini açmamış bir oyuncu için atılan taşı değerlendir
+        else:
+            # Atılan taşla yeni bir per oluşturulabiliyor mu?
+            gecici_el = self.el + [atilan_tas]
+            gecici_el_analizi = eli_analiz_et(gecici_el)
+            
+            # Göreve uygun bir per oluşturma potansiyeli var mı?
+            if any(Rules.per_dogrula(list(kombo), game.mevcut_gorev) for kombo in gecici_el_analizi['seriler'] + gecici_el_analizi['uc_taslilar'] + gecici_el_analizi['dort_taslilar'] + gecici_el_analizi['ciftler']):
+                logger.info(f"AI {self.isim} görevi tamamlamak için atılan taşı alıyor: {atilan_tas.renk}_{atilan_tas.deger}")
+                return True
+            
+            # Elini açmamış olsa bile işine yarayan bir taşı alabilir.
+            # Örneğin, bir ikiliyi üçlüye tamamlıyorsa veya bir seriyi uzatıyorsa.
+            # Bu, AI'ın daha akıllıca kararlar vermesini sağlar.
+            if any(atilan_tas in potansiyel for potansiyel in gecici_el_analizi['ikili_potansiyeller']['seri'] + gecici_el_analizi['ikili_potansiyeller']['kut']):
+                logger.info(f"AI {self.isim} potansiyel per oluşturmak için atılan taşı alıyor: {atilan_tas.renk}_{atilan_tas.deger}")
+                return True
+
+        logger.info(f"AI {self.isim} atılan taşı değerlendiriyor. Almadı.")
         return False
+
 
     @logger.log_function
     def ai_el_ac_dene(self, game):
         if game.acilmis_oyuncular[self.index]:
-            # El zaten açıksa, yeni bir per açmayı dener
             kombinasyonlar = self._el_acma_kombinasyonlari_uret()
             for kombo in kombinasyonlar:
                 if Rules.genel_per_dogrula(kombo):
                     return [t.id for t in kombo]
             return None
         else:
-            # El henüz açılmadıysa, göreve uygun bir per açmayı dener
             gorev = game.mevcut_gorev
             for tas_ids in self._el_acma_kombinasyonlari_uret():
-                if Rules.per_dogrula([t for t in self.el if t.id in tas_ids], gorev):
+                secilen_taslar = [t for t in self.el if t.id in tas_ids]
+                if Rules.per_dogrula(secilen_taslar, gorev):
                     return tas_ids
             return None
 

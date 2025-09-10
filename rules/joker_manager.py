@@ -8,10 +8,10 @@ class JokerManager:
     @staticmethod
     @logger.log_function
     def el_ac_joker_kontrolu(game, oyuncu, secilen_taslar):
-        if len([t for t in secilen_taslar if t.renk == "joker"]) != 1:
+        joker = next((t for t in secilen_taslar if t.renk == "joker"), None)
+        if not joker:
             return {"status": "no_joker"}
         
-        joker = next((t for t in secilen_taslar if t.renk == "joker"), None)
         diger_taslar = [t for t in secilen_taslar if t.id != joker.id]
         
         if not diger_taslar or len(diger_taslar) < 2:
@@ -36,18 +36,21 @@ class JokerManager:
         if len({t.renk for t in diger_taslar}) == 1:
             renk = diger_taslar[0].renk
             sayilar = sorted([t.deger for t in diger_taslar])
-            if sayilar[0] > 1:
-                olasi_sayilar.add(sayilar[0] - 1)
-            if sayilar[-1] < 13:
-                olasi_sayilar.add(sayilar[-1] + 1)
+            
+            # Arada boşluk varsa joker o taşı temsil etmeli
+            if sayilar[1] - sayilar[0] == 2:
+                olasi_sayilar.add(sayilar[0] + 1)
+            else:
+                if sayilar[0] > 1:
+                    olasi_sayilar.add(sayilar[0] - 1)
+                if sayilar[-1] < 13:
+                    olasi_sayilar.add(sayilar[-1] + 1)
             
             # 1-13 döngüsü için
             if 1 in sayilar and 13 in sayilar:
                 if len(sayilar) == 2:
                     olasi_sayilar.add(12)
-                elif len(sayilar) > 2 and 12 not in sayilar:
-                    pass
-        
+
         # Küt için
         elif len({t.deger for t in diger_taslar}) == 1 and len(diger_taslar) <= 3:
             deger = diger_taslar[0].deger
