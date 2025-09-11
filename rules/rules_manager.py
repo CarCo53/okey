@@ -74,41 +74,36 @@ class Rules:
 
         # Perdeki sayıları al, jokerlerin yerine geçen taşları da dahil et.
         sayilar = sorted([t.joker_yerine_gecen.deger if t.renk == "joker" else t.deger for t in per])
-
-        # Joker'in yerine geçecek değer yoksa (yani yeni atılan taş)
-        if tas.renk == "joker" and not tas.joker_yerine_gecen:
-            # Yeni bir joker, hangi değer yerine geçebileceğini bulmaya çalışır.
-            # 1. En küçük sayının bir eksiği (eğer 1 değilse)
-            if sayilar[0] > 1 and sayilar[0] - 1 not in sayilar: return True
-            # 2. En büyük sayının bir fazlası (eğer 13 değilse)
-            if sayilar[-1] < 13 and sayilar[-1] + 1 not in sayilar: return True
-            # 3. Döngüsel seriye ekleme (13-1 durumunda 12 eklemek gibi)
-            if 1 in sayilar and 13 in sayilar and 12 not in sayilar: return True
-            return False
-
+        sayilar_set = set(sayilar)
+        
         tas_degeri = tas.deger
+        
+        # Eğer taş 1 ise ve seri döngüsel olabilirse, 14 olarak kabul edilir.
+        if tas_degeri == 1 and 13 in sayilar_set and tas.renk == per_rengi:
+             return True
+        # Eğer taş 13 ise ve seri döngüsel olabilirse, 0 olarak kabul edilir.
+        if tas_degeri == 13 and 1 in sayilar_set and tas.renk == per_rengi:
+             return True
 
         # Normal seriye ekleme kuralları
         if tas_degeri == sayilar[0] - 1 or tas_degeri == sayilar[-1] + 1:
             return True
         
-        # Döngüsel seri kontrolü: 12-13-1 serisine 2 eklenemez.
-        # ve 1-2-3 serisine 13 eklenemez.
-        if 1 in sayilar and 13 in sayilar:
-            # Özel durum: 13-1 serisine 12 eklemek.
-            if len(sayilar) == 2 and sayilar[0] == 1 and sayilar[-1] == 13 and tas_degeri == 12:
-                return True
-            # Kural 1: 1-2-3 serisine 13 eklenemez.
-            if len(sayilar) >= 3 and sayilar[:3] == [1, 2, 3] and tas_degeri == 13:
-                 return False
-            # Kural 2: 12-13-1 serisine 2 eklenemez.
-            if len(sayilar) >= 3 and sayilar[-3:] == [12, 13, 14] and tas_degeri == 2:
-                return False
-
-        # Kurala aykırı döngüsel eklemeler (Kılavuzda belirtildiği gibi)
-        if tas_degeri == 13 and 1 in sayilar and 2 in sayilar:
-            return False
-        if tas_degeri == 1 and 12 in sayilar and 13 in sayilar:
-             return False
+        # Döngüsel seriye ekleme kuralları (12-13-1 serisine 11 ekleme gibi)
+        # 1, 13 ve 12 sayılarının per içinde olup olmadığını kontrol et
+        if {1, 13, 12}.issubset(sayilar_set) and tas_degeri == 11 and tas.renk == per_rengi:
+            return True
         
+        # 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1 serisine 2 eklenmesi durumu
+        if {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1}.issubset(sayilar_set) and tas_degeri == 2 and tas.renk == per_rengi:
+            return True
+
+        # Kılavuzda belirtilen özel kurallar
+        # Kural 1: 1-2-3 serisi mevcutken 13 eklenemez.
+        if {1, 2, 3}.issubset(sayilar_set) and tas_degeri == 13:
+             return False
+        # Kural 2: 12-13-1 serisi mevcutken 2 eklenemez.
+        if {12, 13, 1}.issubset(sayilar_set) and tas_degeri == 2:
+            return False
+
         return False

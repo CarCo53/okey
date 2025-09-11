@@ -1,6 +1,7 @@
 # ai/ai_player.py
 
 import random
+from itertools import combinations
 from core.player import Player
 from core.game_state import GameState
 from rules.rules_manager import Rules
@@ -44,27 +45,44 @@ class AIPlayer(Player):
         logger.info(f"AI {self.isim} atılan taşı değerlendiriyor. Almadı.")
         return False
 
-
     @logger.log_function
     def ai_el_ac_dene(self, game):
+        # Mevcut elin analizini yap
+        el_analizi = eli_analiz_et(self.el)
+        gorev = game.mevcut_gorev
+
         if game.acilmis_oyuncular[self.index]:
-            kombinasyonlar = self._el_acma_kombinasyonlari_uret()
-            for kombo in kombinasyonlar:
-                if Rules.genel_per_dogrula(kombo):
-                    return [t.id for t in kombo]
+            # Elini açmış bir oyuncu için, geçerli perler bulup aç.
+            for perler_listesi in [el_analizi['seriler'], el_analizi['uc_taslilar'], el_analizi['dort_taslilar']]:
+                for per in perler_listesi:
+                    if Rules.genel_per_dogrula(per):
+                        return [t.id for t in per]
             return None
         else:
-            gorev = game.mevcut_gorev
-            for tas_ids in self._el_acma_kombinasyonlari_uret():
-                secilen_taslar = [t for t in self.el if t.id in tas_ids]
-                if Rules.per_dogrula(secilen_taslar, gorev):
-                    return tas_ids
+            # Elini açmamış bir oyuncu için, göreve uygun bir per bul.
+            # `gorevler.py` içinde tanımlanan görev listesine göre kontrol et.
+            if gorev.startswith("Seri"):
+                for seri in el_analizi['seriler']:
+                    if Rules.per_dogrula(seri, gorev):
+                        return [t.id for t in seri]
+            elif gorev.startswith("Küt"):
+                for kut in el_analizi['uc_taslilar'] + el_analizi['dort_taslilar']:
+                    if Rules.per_dogrula(kut, gorev):
+                        return [t.id for t in kut]
+            elif "x" in gorev or "+" in gorev:
+                # Çoklu ve karma perler için özel kontrol
+                # Şu anki eli direkt olarak `per_dogrula`ya gönderelim.
+                # Daha sonra geliştirilebilir.
+                if Rules.per_dogrula(self.el, gorev):
+                    return [t.id for t in self.el]
+            elif gorev == "Çift":
+                if Rules.per_dogrula(self.el, gorev):
+                    return [t.id for t in self.el]
             return None
 
     @logger.log_function
     def ai_islem_yap_dene(self, game):
         if not game.acilmis_oyuncular[self.index]: return None
-        if game.ilk_el_acan_tur.get(self.index, -1) >= game.tur_numarasi: return None
 
         # Joker değiştirme kontrolü
         for per_sahibi_idx, perler in game.acilan_perler.items():
@@ -76,14 +94,55 @@ class AIPlayer(Player):
                     if eslesen_tas:
                         return {"action_type": "joker_degistir", "sahip_idx": per_sahibi_idx, "per_idx": per_idx, "tas_id": eslesen_tas.id}
         
-        # Normal işleme kontrolü
-        for tas in self.el:
-            for per_sahibi_idx, perler in game.acilan_perler.items():
-                for per_idx, per in enumerate(perler):
+        # Geliştirilmiş işleme kontrolü
+        for per_sahibi_idx, perler in game.acilan_perler.items():
+            for per_idx, per in enumerate(perler):
+                # Tek bir taş işleme
+                for tas in self.el:
+                    if tas.renk == "joker":
+                        continue
                     if Rules.islem_dogrula(per, tas):
                         return {"action_type": "islem_yap", "sahip_idx": per_sahibi_idx, "per_idx": per_idx, "tas_id": tas.id}
-        
+                
+                # Birden fazla taşı seri perlere işleme
+                gruplar = self._get_consecutive_groups(self.el)
+                for grup in gruplar:
+                    # Grubun ilk elemanını eklemeye çalış
+                    if Rules.islem_dogrula(per, grup[0]):
+                        # Grup per'e eklenince geçerli bir per mi oluyor kontrol et
+                        if seri_mu(per + list(grup)):
+                            return {"action_type": "islem_yap", "sahip_idx": per_sahibi_idx, "per_idx": per_idx, "tas_id": [t.id for t in grup]}
+                    
+                    # Grubun son elemanını eklemeye çalış
+                    if Rules.islem_dogrula(per, grup[-1]):
+                         if seri_mu(per + list(grup)):
+                            return {"action_type": "islem_yap", "sahip_idx": per_sahibi_idx, "per_idx": per_idx, "tas_id": [t.id for t in grup]}
+
         return None
+    
+    def _get_consecutive_groups(self, el):
+        # Elindeki taşları renge göre gruplayıp, peş peşe gelenleri bulur
+        renk_gruplari = {}
+        for tas in el:
+            if tas.renk not in renk_gruplari:
+                renk_gruplari[tas.renk] = []
+            renk_gruplari[tas.renk].append(tas)
+        
+        tum_gruplar = []
+        for renk in renk_gruplari:
+            renk_gruplari[renk].sort(key=lambda t: t.deger)
+            if len(renk_gruplari[renk]) >= 2:
+                grup = [renk_gruplari[renk][0]]
+                for i in range(1, len(renk_gruplari[renk])):
+                    if renk_gruplari[renk][i].deger == renk_gruplari[renk][i-1].deger + 1:
+                        grup.append(renk_gruplari[renk][i])
+                    else:
+                        if len(grup) >= 2:
+                            tum_gruplar.append(grup)
+                        grup = [renk_gruplari[renk][i]]
+                if len(grup) >= 2:
+                    tum_gruplar.append(grup)
+        return tum_gruplar
 
     @logger.log_function
     def karar_ver_ve_at(self, game):
@@ -91,12 +150,8 @@ class AIPlayer(Player):
         self.oyun_analizi = eli_analiz_et(self.el)
         atilan_tas = en_akilli_ati_bul(self.el, self.oyun_analizi, game.atilan_taslar)
         return atilan_tas
-
+    
     def _el_acma_kombinasyonlari_uret(self):
         # Bu fonksiyon, AI'nin elindeki taşlarla olası per kombinasyonlarını üretir.
-        # Basit bir örnek olarak, 3'lü ve 4'lü tüm kombinasyonları döndürür.
-        from itertools import combinations
-        kombinasyonlar = []
-        for i in range(3, len(self.el) + 1):
-            kombinasyonlar.extend(list(combinations(self.el, i)))
-        return kombinasyonlar
+        # Yeni mantıkla doğrudan eli_analiz_et kullanıldığı için bu fonksiyona gerek kalmadı.
+        return []
