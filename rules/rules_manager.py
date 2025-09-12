@@ -89,15 +89,6 @@ class Rules:
         if tas_degeri == sayilar[0] - 1 or tas_degeri == sayilar[-1] + 1:
             return True
         
-        # Döngüsel seriye ekleme kuralları (12-13-1 serisine 11 ekleme gibi)
-        # 1, 13 ve 12 sayılarının per içinde olup olmadığını kontrol et
-        if {1, 13, 12}.issubset(sayilar_set) and tas_degeri == 11 and tas.renk == per_rengi:
-            return True
-        
-        # 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1 serisine 2 eklenmesi durumu
-        if {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1}.issubset(sayilar_set) and tas_degeri == 2 and tas.renk == per_rengi:
-            return True
-
         # Kılavuzda belirtilen özel kurallar
         # Kural 1: 1-2-3 serisi mevcutken 13 eklenemez.
         if {1, 2, 3}.issubset(sayilar_set) and tas_degeri == 13:
@@ -106,4 +97,12 @@ class Rules:
         if {12, 13, 1}.issubset(sayilar_set) and tas_degeri == 2:
             return False
 
+        # Döngüsel seri durumunda 1'in 13'e eklenebilmesi
+        if 13 in sayilar_set and tas_degeri == 1 and len(per) < 14 and per_rengi == tas.renk:
+            return True
+        
+        # Döngüsel seri durumunda 2'nin 1'e eklenebilmesi (12-13-1 serisi için)
+        if 1 in sayilar_set and 13 in sayilar_set and tas_degeri == 2 and len(per) < 14 and per_rengi == tas.renk:
+            return True
+        
         return False

@@ -27,8 +27,8 @@ class Game:
         self.tur_numarasi = 1
         self.ilk_el_acan_tur = {}
         self.arayuz = None
-        # Her oyuncunun tur içinde ana hamle (per açma/işleme) yapıp yapmadığını takip eder
         self.oyuncu_hamle_yapti = [False] * len(self.oyuncular)
+        self.game_over = False
 
     @logger.log_function
     def baslat(self, gorev=None):
@@ -36,11 +36,17 @@ class Game:
     
     @logger.log_function
     def el_ac(self, oyuncu_index, tas_id_list):
-        return ActionManager.el_ac(self, oyuncu_index, tas_id_list)
+        result = ActionManager.el_ac(self, oyuncu_index, tas_id_list)
+        if result and len(self.oyuncular[oyuncu_index].el) == 0:
+            self.oyunu_bitir(oyuncu_index)
+        return result
 
     @logger.log_function
     def islem_yap(self, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
-        return ActionManager.islem_yap(self, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
+        result = ActionManager.islem_yap(self, isleyen_oyuncu_idx, per_sahibi_idx, per_idx, tas_id)
+        if result and len(self.oyuncular[isleyen_oyuncu_idx].el) == 0:
+            self.oyunu_bitir(isleyen_oyuncu_idx)
+        return result
         
     @logger.log_function
     def joker_degistir(self, degistiren_oyuncu_idx, per_sahibi_idx, per_idx, tas_id):
@@ -48,14 +54,23 @@ class Game:
 
     @logger.log_function
     def tas_at(self, oyuncu_index, tas_id):
-        return TurnManager.tas_at(self, oyuncu_index, tas_id)
+        result = TurnManager.tas_at(self, oyuncu_index, tas_id)
+        if not self.deste.taslar:
+             self.oyunu_bitir(kazanan_index=None)
+        return result
 
     @logger.log_function
     def desteden_cek(self, oyuncu_index):
+        if not self.deste.taslar:
+            self.oyunu_bitir(kazanan_index=None)
+            return False
         return TurnManager.desteden_cek(self, oyuncu_index)
 
     @logger.log_function
     def atilan_tasi_al(self, oyuncu_index):
+        if not self.deste.taslar:
+            self.oyunu_bitir(kazanan_index=None)
+            return False
         return TurnManager.atilan_tasi_al(self, oyuncu_index)
 
     @logger.log_function
@@ -73,6 +88,7 @@ class Game:
             self.tur_numarasi += 1
             logger.info(f"Yeni tura geçildi: Tur {self.tur_numarasi}")
         self.sira_kimde_index = yeni_index
+        self.oyuncu_hamle_yapti = [False] * len(self.oyuncular)
         
     @logger.log_function
     def _per_sirala(self, per):
@@ -87,5 +103,12 @@ class Game:
             else:
                 per.sort(key=lambda t: (t.joker_yerine_gecen or t).deger or 0)
     
+    @logger.log_function
+    def oyunu_bitir(self, kazanan_index):
+        self.oyun_durumu = GameState.BITIS
+        self.kazanan_index = kazanan_index
+        self.game_over = True
+        logger.info(f"Oyun Bitti. Kazanan: {self.oyuncular[kazanan_index].isim}" if kazanan_index is not None else "Oyun Bitti. Deste Tükendi.")
+
     def oyun_bitti_mi(self):
-        return self.oyun_durumu == GameState.BITIS or not self.deste.taslar
+        return self.game_over or not self.deste.taslar
