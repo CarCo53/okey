@@ -1,0 +1,224 @@
+[2025-09-15 13:29:30] INFO: CALL AIPlayer.__init__
+[2025-09-15 13:29:30] INFO: CALL Player.__init__
+[2025-09-15 13:29:30] INFO: RETURN Player.__init__ -> None
+[2025-09-15 13:29:30] INFO: RETURN AIPlayer.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Tile.__init__
+[2025-09-15 13:29:30] INFO: RETURN Tile.__init__ -> None
+[2025-09-15 13:29:30] INFO: CALL Player.el_sirala
+[2025-09-15 13:29:30] INFO: RETURN Player.el_sirala -> None
+[2025-09-15 13:29:30] INFO: CALL AIPlayer.ai_el_ac_dene
+[2025-09-15 13:29:30] INFO: CALL eli_analiz_et
+[2025-09-15 13:29:30] INFO: RETURN eli_analiz_et -> {'ciftler': [[Joker(106), Joker(105)]], 'uc_taslilar': [[siyah_3_57, kirmizi_3_84, kirmizi_3_83]], 'dort_taslilar': [[sari_6_11, sari_6_12, siyah_6_63, siyah_6_64], [sari_10_20, sari_10_19, mavi_10_46, kirmizi_10_97], [sari_11_21, mavi_11_48, siyah_11_74, kirmizi_11_99]], 'seriler': [[sari_8_15, sari_9_18, sari_10_20], [sari_10_19, sari_11_21, sari_12_23], [sari_11_21, sari_12_23, sari_13_25], [mavi_9_43, mavi_10_46, mavi_11_48], [mavi_10_46, mavi_11_48, mavi_12_49], [siyah_1_54, siyah_2_55, siyah_3_57], [siyah_2_55, siyah_3_57, siyah_4_60], [kirmizi_8_94, kirmizi_9_96, kirmizi_10_97], [kirmizi_9_96, kirmizi_10_97, kirmizi_11_99], [kirmizi_10_97, kirmizi_11_99, kirmizi_12_101]], 'ikili_potansiyeller': {'seri': [(sari_1_1, sari_1_2), (sari_1_2, sari_2_3), (sari_2_3, sari_4_8), (sari_4_8, sari_5_9), (sari_5_9, sari_5_10), (sari_5_10, sari_6_11), (sari_6_11, sari_6_12), (sari_6_12, sari_8_16), (sari_8_16, sari_8_15), (sari_8_15, sari_9_18), (sari_9_18, sari_10_20), (sari_10_20, sari_10_19), (sari_10_19, sari_11_21), (sari_11_21, sari_12_23), (sari_12_23, sari_13_25), (sari_13_25, sari_13_26), (mavi_1_28, mavi_1_27), (mavi_1_27, mavi_2_30), (mavi_2_30, mavi_4_34), (mavi_4_34, mavi_4_33), (mavi_4_33, mavi_5_36), (mavi_5_36, mavi_7_40), (mavi_7_40, mavi_9_44), (mavi_9_44, mavi_9_43), (mavi_9_43, mavi_10_46), (mavi_10_46, mavi_11_48), (mavi_11_48, mavi_12_49), (mavi_12_49, mavi_12_50), (mavi_12_50, mavi_13_51), (mavi_13_51, mavi_13_52), (siyah_1_54, siyah_2_55), (siyah_2_55, siyah_3_57), (siyah_3_57, siyah_4_60), (siyah_4_60, siyah_4_59), (siyah_4_59, siyah_5_62), (siyah_5_62, siyah_5_61), (siyah_5_61, siyah_6_63), (siyah_6_63, siyah_6_64), (siyah_6_64, siyah_7_65), (siyah_7_65, siyah_7_66), (siyah_7_66, siyah_8_68), (siyah_8_68, siyah_8_67), (siyah_8_67, siyah_9_69), (siyah_9_69, siyah_9_70), (siyah_9_70, siyah_11_74), (kirmizi_1_80, kirmizi_2_81), (kirmizi_2_81, kirmizi_2_82), (kirmizi_2_82, kirmizi_3_84), (kirmizi_3_84, kirmizi_3_83), (kirmizi_3_83, kirmizi_4_85), (kirmizi_4_85, kirmizi_4_86), (kirmizi_4_86, kirmizi_5_87), (kirmizi_5_87, kirmizi_5_88), (kirmizi_5_88, kirmizi_7_92), (kirmizi_7_92, kirmizi_7_91), (kirmizi_7_91, kirmizi_8_93), (kirmizi_8_93, kirmizi_8_94), (kirmizi_8_94, kirmizi_9_96), (kirmizi_9_96, kirmizi_10_97), (kirmizi_10_97, kirmizi_11_99), (kirmizi_11_99, kirmizi_12_101), (kirmizi_12_101, kirmizi_12_102), (kirmizi_12_102, kirmizi_13_103), (kirmizi_13_103, kirmizi_13_104), (Joker(106), Joker(105))], 'kut': [(Joker(106), Joker(105))]}}
+[2025-09-15 13:29:30] INFO: CALL cift_per_mu
+[2025-09-15 13:29:30] INFO: RETURN cift_per_mu -> False
+[2025-09-15 13:29:30] INFO: RETURN AIPlayer.ai_el_ac_dene -> []

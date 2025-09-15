@@ -1,5 +1,5 @@
 # ai/strategies/planlama_stratejisi.py
-from collections import Counter
+from collections import Counter, defaultdict
 from itertools import combinations
 from log import logger
 from rules.per_validators import kut_mu, seri_mu
@@ -41,18 +41,18 @@ def eli_analiz_et(el):
                     seri = [tas_listesi[i], tas_listesi[i+1], tas_listesi[i+2]]
                     el_analizi["seriler"].append(seri)
     
-    # Perleri bul (küt)
-    deger_gruplari = {}
+    # Perleri bul (küt ve çift)
+    deger_gruplari = defaultdict(list)
     for tas in el:
-        if tas.deger not in deger_gruplari: deger_gruplari[tas.deger] = []
         deger_gruplari[tas.deger].append(tas)
         
     for deger, tas_listesi in deger_gruplari.items():
-        if len(tas_listesi) >= 3:
-            if len(tas_listesi) == 3:
-                el_analizi["uc_taslilar"].append(tas_listesi)
-            elif len(tas_listesi) == 4:
-                el_analizi["dort_taslilar"].append(tas_listesi)
+        if len(tas_listesi) == 2:
+             el_analizi["ciftler"].append(tas_listesi)
+        elif len(tas_listesi) == 3:
+            el_analizi["uc_taslilar"].append(tas_listesi)
+        elif len(tas_listesi) == 4:
+            el_analizi["dort_taslilar"].append(tas_listesi)
     
     # Potansiyel perleri bul (ikililer)
     for renk, tas_listesi in renk_gruplari.items():

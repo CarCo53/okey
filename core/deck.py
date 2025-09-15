@@ -13,6 +13,8 @@ class Deck:
     @logger.log_function
     def olustur(self):
         self.taslar = []
+        # Her yeni deste oluşturulduğunda ID sayacını sıfırla
+        Tile.id_counter = 0
         renkler = ["sari", "mavi", "siyah", "kirmizi"]
         
         # 1'den 13'e kadar olan taşları oluştur

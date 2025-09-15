@@ -4,10 +4,13 @@ from log import logger
 
 class Tile:
     RENK_SIRALAMASI = {"sari": 0, "mavi": 1, "siyah": 2, "kirmizi": 3, "joker": 4}
+    id_counter = 0
 
     @logger.log_function
     def __init__(self, renk, deger, imaj_adi):
-        self.id = uuid.uuid4().int >> 64
+        # Taşlara artan bir sayısal ID atar.
+        Tile.id_counter += 1
+        self.id = Tile.id_counter
         self.renk = renk
         self.deger = deger
         self.imaj_adi = imaj_adi

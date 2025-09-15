@@ -6,6 +6,8 @@ from core.game_state import GameState
 from rules.rules_manager import Rules
 from rules.per_validators import seri_mu, kut_mu
 from ai.strategies.planlama_stratejisi import eli_analiz_et, en_akilli_ati_bul
+from ai.strategies.klasik_per_stratejisi import en_iyi_per_bul
+from ai.strategies.coklu_per_stratejisi import en_iyi_coklu_per_bul
 from log import logger
 
 class AIPlayer(Player):
@@ -47,19 +49,56 @@ class AIPlayer(Player):
 
     @logger.log_function
     def ai_el_ac_dene(self, game):
-        if game.acilmis_oyuncular[self.index]:
-            kombinasyonlar = self._el_acma_kombinasyonlari_uret()
-            for kombo in kombinasyonlar:
-                if Rules.genel_per_dogrula(kombo):
-                    return [t.id for t in kombo]
-            return None
+        """
+        AI'nin elini açmak için en iyi per kombinasyonunu bulmaya çalışır.
+        Brute-force yerine akıllı stratejiler kullanır.
+        """
+        # Önce eldeki potansiyel perleri analiz et
+        el_analizi = eli_analiz_et(self.el)
+        
+        # Görevin ne olduğuna bağlı olarak farklı stratejiler uygula
+        gorev = game.mevcut_gorev
+        
+        # İlk el açılışı için göreve özel per arama
+        if not game.acilmis_oyuncular[self.index]:
+            if gorev == "Çift":
+                # Çift görevini kontrol et
+                # Burada özel bir çift stratejisi fonksiyonu çağrılabilir.
+                # Örnek: from ai.strategies.cift_stratejisi import en_iyi_ciftleri_bul
+                # acilacak_per = en_iyi_ciftleri_bul(self.el, gorev)
+                # Şimdilik planlama stratejisi içinde de bu mantık olabilir.
+                return [t.id for t in el_analizi["ciftler"] if Rules.per_dogrula(el_analizi["ciftler"], gorev)]
+            
+            if "2x" in gorev or "+" in gorev:
+                # Çoklu veya karma görevler için kombinasyonları dene
+                # Bu kısım karmaşık olduğu için dış strateji fonksiyonu kullanılabilir.
+                acilacak_per = en_iyi_coklu_per_bul(self.el, gorev)
+                if acilacak_per:
+                    return [t.id for t in acilacak_per]
+            
+            # Klasik per görevleri için
+            acilacak_per = en_iyi_per_bul(self.el, gorev)
+            if acilacak_per:
+                return [t.id for t in acilacak_per]
+        
+        # Zaten eli açılmış oyuncu için genel per arama
         else:
-            gorev = game.mevcut_gorev
-            for tas_ids in self._el_acma_kombinasyonlari_uret():
-                secilen_taslar = [t for t in self.el if t.id in tas_ids]
-                if Rules.per_dogrula(secilen_taslar, gorev):
-                    return tas_ids
-            return None
+            # Önce en iyi perleri bulmaya çalış
+            # Seri perler
+            for per in el_analizi["seriler"]:
+                if Rules.genel_per_dogrula(per): return [t.id for t in per]
+            # Küt perler
+            for per in el_analizi["uc_taslilar"] + el_analizi["dort_taslilar"]:
+                if Rules.genel_per_dogrula(per): return [t.id for t in per]
+            
+            # Potansiyel perleri bir araya getirmeye çalış (basit bir kombinasyon denemesi)
+            aday_taslar = el_analizi["ikili_potansiyeller"]["seri"] + el_analizi["ikili_potansiyeller"]["kut"]
+            for i in range(3, len(self.el) + 1):
+                for kombo in combinations(self.el, i):
+                    if Rules.genel_per_dogrula(list(kombo)):
+                        return [t.id for t in kombo]
+        
+        return None
 
     @logger.log_function
     def ai_islem_yap_dene(self, game):
@@ -91,12 +130,3 @@ class AIPlayer(Player):
         self.oyun_analizi = eli_analiz_et(self.el)
         atilan_tas = en_akilli_ati_bul(self.el, self.oyun_analizi, game.atilan_taslar)
         return atilan_tas
-
-    def _el_acma_kombinasyonlari_uret(self):
-        # Bu fonksiyon, AI'nin elindeki taşlarla olası per kombinasyonlarını üretir.
-        # Basit bir örnek olarak, 3'lü ve 4'lü tüm kombinasyonları döndürür.
-        from itertools import combinations
-        kombinasyonlar = []
-        for i in range(3, len(self.el) + 1):
-            kombinasyonlar.extend(list(combinations(self.el, i)))
-        return kombinasyonlar
