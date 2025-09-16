@@ -3,6 +3,7 @@ from collections import Counter, defaultdict
 from itertools import combinations
 from log import logger
 from rules.per_validators import kut_mu, seri_mu
+from core.tile import Tile
 
 @logger.log_function
 def _get_oyundaki_taslar(perler):
@@ -11,7 +12,7 @@ def _get_oyundaki_taslar(perler):
         for tas in per:
             gercek_tas = tas.joker_yerine_gecen if tas.renk == 'joker' else tas
             if gercek_tas:
-                oyundaki_taslar[(gercek_tas.renk, gercek_tas.deger)] += 1
+                oyundaki_taslar[(gercek_tas.tas_rengi, gercek_tas.deger)] += 1
     return oyundaki_taslar
 
 @logger.log_function
@@ -25,10 +26,10 @@ def eli_analiz_et(el):
     }
     
     # Grupları renge göre ayır
-    renk_gruplari = {}
+    renk_gruplari = defaultdict(list)
     for tas in el:
-        if tas.renk not in renk_gruplari: renk_gruplari[tas.renk] = []
-        renk_gruplari[tas.renk].append(tas)
+        if tas.renk != 'joker':
+            renk_gruplari[tas.renk].append(tas)
     
     for renk in renk_gruplari:
         renk_gruplari[renk].sort(key=lambda t: t.deger)
@@ -42,18 +43,28 @@ def eli_analiz_et(el):
                     el_analizi["seriler"].append(seri)
     
     # Perleri bul (küt ve çift)
+    renk_deger_gruplari = defaultdict(list)
     deger_gruplari = defaultdict(list)
     for tas in el:
-        deger_gruplari[tas.deger].append(tas)
-        
-    for deger, tas_listesi in deger_gruplari.items():
+        if tas.renk != 'joker':
+            anahtar = (tas.renk, tas.deger)
+            renk_deger_gruplari[anahtar].append(tas)
+            deger_gruplari[tas.deger].append(tas)
+            
+    for tas_listesi in renk_deger_gruplari.values():
         if len(tas_listesi) == 2:
              el_analizi["ciftler"].append(tas_listesi)
-        elif len(tas_listesi) == 3:
-            el_analizi["uc_taslilar"].append(tas_listesi)
-        elif len(tas_listesi) == 4:
-            el_analizi["dort_taslilar"].append(tas_listesi)
     
+    for deger, tas_listesi in deger_gruplari.items():
+        if len(tas_listesi) >= 3:
+            # Sadece farklı renkteki taşları kontrol et
+            renkler_seti = {t.renk for t in tas_listesi}
+            if len(renkler_seti) >= 3:
+                if len(tas_listesi) == 3:
+                    el_analizi["uc_taslilar"].append(tas_listesi)
+                elif len(tas_listesi) == 4:
+                    el_analizi["dort_taslilar"].append(tas_listesi)
+
     # Potansiyel perleri bul (ikililer)
     for renk, tas_listesi in renk_gruplari.items():
         for i in range(len(tas_listesi) - 1):

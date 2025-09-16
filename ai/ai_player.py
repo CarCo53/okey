@@ -8,7 +8,9 @@ from rules.per_validators import seri_mu, kut_mu
 from ai.strategies.planlama_stratejisi import eli_analiz_et, en_akilli_ati_bul
 from ai.strategies.klasik_per_stratejisi import en_iyi_per_bul
 from ai.strategies.coklu_per_stratejisi import en_iyi_coklu_per_bul
+from ai.strategies.cift_stratejisi import en_iyi_ciftleri_bul, atilacak_en_kotu_tas
 from log import logger
+from itertools import combinations
 
 class AIPlayer(Player):
     @logger.log_function
@@ -46,7 +48,6 @@ class AIPlayer(Player):
         logger.info(f"AI {self.isim} atılan taşı değerlendiriyor. Almadı.")
         return False
 
-
     @logger.log_function
     def ai_el_ac_dene(self, game):
         """
@@ -62,16 +63,11 @@ class AIPlayer(Player):
         # İlk el açılışı için göreve özel per arama
         if not game.acilmis_oyuncular[self.index]:
             if gorev == "Çift":
-                # Çift görevini kontrol et
-                # Burada özel bir çift stratejisi fonksiyonu çağrılabilir.
-                # Örnek: from ai.strategies.cift_stratejisi import en_iyi_ciftleri_bul
-                # acilacak_per = en_iyi_ciftleri_bul(self.el, gorev)
-                # Şimdilik planlama stratejisi içinde de bu mantık olabilir.
-                return [t.id for t in el_analizi["ciftler"] if Rules.per_dogrula(el_analizi["ciftler"], gorev)]
+                acilacak_per = en_iyi_ciftleri_bul(self.el, gorev)
+                if acilacak_per:
+                    return [t.id for t in acilacak_per]
             
             if "2x" in gorev or "+" in gorev:
-                # Çoklu veya karma görevler için kombinasyonları dene
-                # Bu kısım karmaşık olduğu için dış strateji fonksiyonu kullanılabilir.
                 acilacak_per = en_iyi_coklu_per_bul(self.el, gorev)
                 if acilacak_per:
                     return [t.id for t in acilacak_per]
@@ -94,6 +90,7 @@ class AIPlayer(Player):
             # Potansiyel perleri bir araya getirmeye çalış (basit bir kombinasyon denemesi)
             aday_taslar = el_analizi["ikili_potansiyeller"]["seri"] + el_analizi["ikili_potansiyeller"]["kut"]
             for i in range(3, len(self.el) + 1):
+                from itertools import combinations
                 for kombo in combinations(self.el, i):
                     if Rules.genel_per_dogrula(list(kombo)):
                         return [t.id for t in kombo]

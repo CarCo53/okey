@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
 
 
-def create_random_hand(num_tiles=70):
+def create_random_hand(num_tiles=25):
     """
     Tüm olası taşları oluşturur ve rastgele bir el seçer.
     Jokerlerin dahil edilme olasılığını artırır.
