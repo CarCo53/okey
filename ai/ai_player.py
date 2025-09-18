@@ -29,18 +29,15 @@ class AIPlayer(Player):
         
         # Elini açmamış bir oyuncu için atılan taşı değerlendir
         else:
-            # Atılan taşla yeni bir per oluşturulabiliyor mu?
             gecici_el = self.el + [atilan_tas]
             gecici_el_analizi = eli_analiz_et(gecici_el)
             
-            # Göreve uygun bir per oluşturma potansiyeli var mı?
+            # 1. Öncelik: Görevi tamamlamak için al
             if any(Rules.per_dogrula(list(kombo), game.mevcut_gorev) for kombo in gecici_el_analizi['seriler'] + gecici_el_analizi['uc_taslilar'] + gecici_el_analizi['dort_taslilar'] + gecici_el_analizi['ciftler']):
                 logger.info(f"AI {self.isim} görevi tamamlamak için atılan taşı alıyor: {atilan_tas.renk}_{atilan_tas.deger}")
                 return True
             
-            # Elini açmamış olsa bile işine yarayan bir taşı alabilir.
-            # Örneğin, bir ikiliyi üçlüye tamamlıyorsa veya bir seriyi uzatıyorsa.
-            # Bu, AI'ın daha akıllıca kararlar vermesini sağlar.
+            # 2. Öncelik: Elini açmış olsaydı işine yarar mıydı?
             if any(atilan_tas in potansiyel for potansiyel in gecici_el_analizi['ikili_potansiyeller']['seri'] + gecici_el_analizi['ikili_potansiyeller']['kut']):
                 logger.info(f"AI {self.isim} potansiyel per oluşturmak için atılan taşı alıyor: {atilan_tas.renk}_{atilan_tas.deger}")
                 return True
@@ -54,10 +51,6 @@ class AIPlayer(Player):
         AI'nin elini açmak için en iyi per kombinasyonunu bulmaya çalışır.
         Brute-force yerine akıllı stratejiler kullanır.
         """
-        # Önce eldeki potansiyel perleri analiz et
-        el_analizi = eli_analiz_et(self.el)
-        
-        # Görevin ne olduğuna bağlı olarak farklı stratejiler uygula
         gorev = game.mevcut_gorev
         
         # İlk el açılışı için göreve özel per arama
@@ -66,20 +59,30 @@ class AIPlayer(Player):
                 acilacak_per = en_iyi_ciftleri_bul(self.el, gorev)
                 if acilacak_per:
                     return [t.id for t in acilacak_per]
+                else:
+                    return None
             
-            if "2x" in gorev or "+" in gorev:
+            # Çoklu ve karma görevler için
+            elif "2x" in gorev or "+" in gorev:
                 acilacak_per = en_iyi_coklu_per_bul(self.el, gorev)
                 if acilacak_per:
                     return [t.id for t in acilacak_per]
+                else:
+                    return None
             
-            # Klasik per görevleri için
-            acilacak_per = en_iyi_per_bul(self.el, gorev)
-            if acilacak_per:
-                return [t.id for t in acilacak_per]
+            # Klasik tekil per görevleri için
+            else: # Bu kısım "Küt 3", "Seri 3" gibi görevleri kapsar
+                acilacak_per = en_iyi_per_bul(self.el, gorev)
+                if acilacak_per:
+                    return [t.id for t in acilacak_per]
+                else:
+                    return None
         
         # Zaten eli açılmış oyuncu için genel per arama
+        # (Bu kısım mevcut koddaki gibi kalabilir)
         else:
             # Önce en iyi perleri bulmaya çalış
+            el_analizi = eli_analiz_et(self.el)
             # Seri perler
             for per in el_analizi["seriler"]:
                 if Rules.genel_per_dogrula(per): return [t.id for t in per]

@@ -88,10 +88,14 @@ def en_akilli_ati_bul(el, el_analizi, atilan_taslar):
     # En az faydalı taşı atma stratejisi
     en_kotu_tas = None
     
-    # Önce alakasız tek taşları at
-    tek_taslar = [t for t in jokersiz_el if t not in [item for sublist in el_analizi["uc_taslilar"] for item in sublist] and
-                  t not in [item for sublist in el_analizi["dort_taslilar"] for item in sublist] and
-                  t not in [item for sublist in el_analizi["seriler"] for item in sublist]]
+    # Öncelikle alakasız tek taşları bul
+    # Bu tanıma artık çiftlerin elemanları da dahil edilmeli.
+    tam_perler = [item for sublist in el_analizi["uc_taslilar"] for item in sublist] + \
+                 [item for sublist in el_analizi["dort_taslilar"] for item in sublist] + \
+                 [item for sublist in el_analizi["seriler"] for item in sublist] + \
+                 [item for sublist in el_analizi["ciftler"] for item in sublist]
+
+    tek_taslar = [t for t in jokersiz_el if t not in tam_perler]
     
     if tek_taslar:
         # En yüksek değerli alakasız taşı at

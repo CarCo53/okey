@@ -47,12 +47,22 @@ class ActionManager:
     def el_ac(game, oyuncu_index, tas_id_list):
         oyuncu = game.oyuncular[oyuncu_index]
         secilen_taslar = [tas for tas in oyuncu.el if tas.id in tas_id_list]
-        joker_kontrol_sonucu = JokerManager.el_ac_joker_kontrolu(game, oyuncu, secilen_taslar)
-        if joker_kontrol_sonucu["status"] == "joker_choice_needed":
-            return joker_kontrol_sonucu
-        if joker_kontrol_sonucu["status"] == "invalid_joker_move":
-            return {"status": "fail", "message": "Jokerle geçersiz per açamazsınız."}
         
+        # Eğer joker kullanılıyorsa, önce duruma göre özel kontrol yap
+        if any(t.renk == "joker" for t in secilen_taslar):
+            # Eğer görev "Çift" ise, JokerManager'ı atla ve doğrudan işle.
+            # JokerManager şu an "Çift" perleri için tasarlanmamıştır.
+            if game.mevcut_gorev == "Çift":
+                return ActionManager._eli_ac_ve_isle(game, oyuncu_index, secilen_taslar)
+            
+            # Diğer görevler için JokerManager'ı kullan
+            joker_kontrol_sonucu = JokerManager.el_ac_joker_kontrolu(game, oyuncu, secilen_taslar)
+            if joker_kontrol_sonucu["status"] == "joker_choice_needed":
+                return joker_kontrol_sonucu
+            if joker_kontrol_sonucu["status"] == "invalid_joker_move":
+                return {"status": "fail", "message": "Jokerle geçersiz per açamazsınız."}
+        
+        # Joker kullanılmıyorsa veya "Çift" görevi ise doğrudan işlemi dene
         return ActionManager._eli_ac_ve_isle(game, oyuncu_index, secilen_taslar)
 
     @staticmethod
@@ -61,9 +71,15 @@ class ActionManager:
         oyuncu = game.oyuncular[oyuncu_index]
         is_ilk_acilis = not game.acilmis_oyuncular[oyuncu_index]
         dogrulama_sonucu = False
+        
+        # İlk el açılışına özel kurallar
         if is_ilk_acilis:
+            # "Çift" görevi için özel kontrol
+            if game.mevcut_gorev == "Çift" and len(secilen_taslar) != 8:
+                return {"status": "fail", "message": "Çift görevi için tam olarak 8 taş (4 çift) açmalısınız."}
             dogrulama_sonucu = Rules.per_dogrula(secilen_taslar, game.mevcut_gorev)
         else:
+            # Eli zaten açık oyuncular için genel per doğrulama
             dogrulama_sonucu = Rules.genel_per_dogrula(secilen_taslar)
 
         if dogrulama_sonucu:
@@ -77,7 +93,7 @@ class ActionManager:
                     for tas in per:
                         oyuncu.tas_at(tas.id)
                     game._per_sirala(per)
-                    game.acilan_perler[oyuncu_index].extend(dogrulama_sonucu)
+                    game.acilan_perler[oyuncu_index].append(list(per))
             else: 
                 for tas in secilen_taslar:
                     oyuncu.tas_at(tas.id)

@@ -62,9 +62,9 @@ class Rules:
     def _seri_islem_dogrula(per, tas):
         if len(per) >= 14: return False
         
-        per_tasi_listesi = [t for t in per if t.renk != "joker"]
+        per_tasi_listesi = [t for t in per if t.renk != "joker" or (t.renk == "joker" and t.joker_yerine_gecen is not None)]
         if not per_tasi_listesi:
-            if tas.renk == "joker": return True
+            if tas.renk == "joker" and not tas.joker_yerine_gecen: return True
             return False
 
         per_rengi = per_tasi_listesi[0].renk
@@ -73,12 +73,22 @@ class Rules:
         if tas.renk != "joker" and tas.renk != per_rengi: return False
 
         # Perdeki sayıları al, jokerlerin yerine geçen taşları da dahil et.
-        sayilar = sorted([t.joker_yerine_gecen.deger if t.renk == "joker" else t.deger for t in per])
-
+        # Hata veren satırın düzeltilmiş hali
+        sayilar = []
+        for t in per:
+            if t.renk == "joker" and t.joker_yerine_gecen is not None:
+                sayilar.append(t.joker_yerine_gecen.deger)
+            elif t.renk != "joker":
+                sayilar.append(t.deger)
+        
+        joker_sayisi = sum(1 for t in per if t.renk == "joker" and t.joker_yerine_gecen is None)
+        sayilar.sort()
+        
         # Joker'in yerine geçecek değer yoksa (yani yeni atılan taş)
         if tas.renk == "joker" and not tas.joker_yerine_gecen:
             # Yeni bir joker, hangi değer yerine geçebileceğini bulmaya çalışır.
             # 1. En küçük sayının bir eksiği (eğer 1 değilse)
+            if not sayilar: return True # Sadece bir joker varsa, her şeyin yerine geçebilir
             if sayilar[0] > 1 and sayilar[0] - 1 not in sayilar: return True
             # 2. En büyük sayının bir fazlası (eğer 13 değilse)
             if sayilar[-1] < 13 and sayilar[-1] + 1 not in sayilar: return True
@@ -99,10 +109,10 @@ class Rules:
             if len(sayilar) == 2 and sayilar[0] == 1 and sayilar[-1] == 13 and tas_degeri == 12:
                 return True
             # Kural 1: 1-2-3 serisine 13 eklenemez.
-            if len(sayilar) >= 3 and sayilar[:3] == [1, 2, 3] and tas_degeri == 13:
+            if len(sayilar) >= 3 and sorted([1,2,3]) == sorted(sayilar[:3]) and tas_degeri == 13:
                  return False
             # Kural 2: 12-13-1 serisine 2 eklenemez.
-            if len(sayilar) >= 3 and sayilar[-3:] == [12, 13, 14] and tas_degeri == 2:
+            if len(sayilar) >= 3 and sorted([12,13,1]) == sorted(sayilar[-3:]) and tas_degeri == 2:
                 return False
 
         # Kurala aykırı döngüsel eklemeler (Kılavuzda belirtildiği gibi)
