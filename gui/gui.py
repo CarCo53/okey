@@ -25,9 +25,6 @@ class Arayuz:
         self.button_manager = ButtonManager(self)
         self.secili_tas_idler = []
         self.alanlar = {}
-        # Joker gösterim çerçevesi burada tanımlandı.
-        self.joker_gosterim_frame = tk.LabelFrame(self.pencere, text="Joker", padx=5, pady=5)
-        self.joker_tas_label = tk.Label(self.joker_gosterim_frame, text="", font=("Arial", 12, "bold"))
         self._layout_olustur()
         self.arayuzu_guncelle()
 
@@ -46,9 +43,17 @@ class Arayuz:
         deste_ve_atilan_cerceve = tk.Frame(self.pencere)
         deste_ve_atilan_cerceve.pack(pady=5)
         
-        # Joker gösterim çerçevesi destenin soluna eklendi
+        self.joker_gosterim_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Okey Taşı", padx=5, pady=5)
         self.joker_gosterim_frame.pack(side=tk.LEFT, padx=10)
-        self.joker_tas_label.pack()
+
+        joker_temsil_frame = tk.Frame(self.joker_gosterim_frame)
+        joker_temsil_frame.pack()
+        self.okey_tasi_label = tk.Label(joker_temsil_frame, borderwidth=4, relief="solid")
+        self.okey_tasi_label.pack(side=tk.LEFT)
+        self.ok_label = tk.Label(joker_temsil_frame, text="=>", font=("Arial", 16, "bold"))
+        self.ok_label.pack(side=tk.LEFT, padx=5)
+        self.okey_temsilci_label = tk.Label(joker_temsil_frame)
+        self.okey_temsilci_label.pack(side=tk.LEFT)
 
         self.deste_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Deste", padx=5, pady=5)
         self.deste_frame.pack(side=tk.LEFT, padx=10)
@@ -57,7 +62,7 @@ class Arayuz:
         self.deste_sayisi_label = tk.Label(self.deste_frame, text="", font=("Arial", 12, "bold"))
         self.deste_sayisi_label.pack(side=tk.TOP, pady=2)
         self.button_manager.ekle_butonlar(self.pencere)
-
+        
     @logger.log_function
     def _oyuncu_alani_olustur(self, parent, isim):
         frame = tk.LabelFrame(parent, text=isim, padx=5, pady=5)
@@ -65,14 +70,21 @@ class Arayuz:
         return frame
 
     def arayuzu_guncelle(self):
-        # Joker görselini al
-        joker_gorseli = self.visuals.tas_resimleri.get("joker.png")
-        if joker_gorseli:
-            self.joker_tas_label.config(image=joker_gorseli, text="", compound="top", bd=4, relief="solid")
-            self.joker_tas_label.image = joker_gorseli
-        
-        arayuzu_guncelle(self)
+        okey_tasi = self.oyun.deste.okey_tasi
+        if okey_tasi:
+            okey_gorseli = self.visuals.tas_resimleri.get("joker.png")
+            temsilci_gorseli = self.visuals.tas_resimleri.get(okey_tasi.imaj_adi)
+            self.okey_tasi_label.config(image=okey_gorseli)
+            self.okey_tasi_label.image = okey_gorseli
+            self.okey_temsilci_label.config(image=temsilci_gorseli)
+            self.okey_temsilci_label.image = temsilci_gorseli
+        else:
+            self.okey_tasi_label.config(image=None, text="Joker", borderwidth=2, relief="groove")
+            self.okey_temsilci_label.config(image=None, text="", borderwidth=0)
+            self.ok_label.config(text="")
 
+        arayuzu_guncelle(self)
+        
     @logger.log_function
     def tas_sec(self, tas_id):
         if tas_id in self.secili_tas_idler: self.secili_tas_idler.remove(tas_id)

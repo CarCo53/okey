@@ -30,34 +30,33 @@ class JokerManager:
     @staticmethod
     @logger.log_function
     def joker_icin_olasi_taslar(diger_taslar):
-        olasi_sayilar = set()
+        olasi_taslar = []
         
         # Seri için
         if len({t.renk for t in diger_taslar}) == 1:
             renk = diger_taslar[0].renk
             sayilar = sorted([t.deger for t in diger_taslar])
             
-            # Arada boşluk varsa joker o taşı temsil etmeli
-            if sayilar[1] - sayilar[0] == 2:
-                olasi_sayilar.add(sayilar[0] + 1)
+            if len(sayilar) == 2 and sayilar[1] - sayilar[0] == 2:
+                olasi_taslar.append(Tile(renk, sayilar[0] + 1, f"{renk}_{sayilar[0]+1}.png"))
             else:
                 if sayilar[0] > 1:
-                    olasi_sayilar.add(sayilar[0] - 1)
+                    olasi_taslar.append(Tile(renk, sayilar[0] - 1, f"{renk}_{sayilar[0]-1}.png"))
                 if sayilar[-1] < 13:
-                    olasi_sayilar.add(sayilar[-1] + 1)
+                    olasi_taslar.append(Tile(renk, sayilar[-1] + 1, f"{renk}_{sayilar[-1]+1}.png"))
             
             # 1-13 döngüsü için
             if 1 in sayilar and 13 in sayilar:
                 if len(sayilar) == 2:
-                    olasi_sayilar.add(12)
-
+                    olasi_taslar.append(Tile(renk, 12, f"{renk}_{12}.png"))
+        
         # Küt için
         elif len({t.deger for t in diger_taslar}) == 1 and len(diger_taslar) <= 3:
             deger = diger_taslar[0].deger
-            renkler = [t.renk for t in diger_taslar]
-            for renk in ["sari", "mavi", "siyah", "kirmizi"]:
-                if renk not in renkler:
-                    olasi_sayilar.add(deger)
+            renkler_mevcut = {t.renk for t in diger_taslar}
+            tum_renkler = ["sari", "mavi", "siyah", "kirmizi"]
+            for renk in tum_renkler:
+                if renk not in renkler_mevcut:
+                    olasi_taslar.append(Tile(renk, deger, f"{renk}_{deger}.png"))
         
-        secenekler = [Tile(renk, s, f"{renk}_{s}.png") for s in sorted(list(olasi_sayilar))]
-        return secenekler
+        return olasi_taslar

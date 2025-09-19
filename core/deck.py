@@ -20,6 +20,12 @@ class Deck:
         self.taslar.append(Tile("joker", 0, "joker.png"))
         self.taslar.append(Tile("joker", 0, "joker.png"))
 
+    @property
+    def okey_tasi(self):
+        # Bu oyunda Jokerler gösterge olarak kullanılmıyor.
+        # Bu property'i bu nedenle değiştirmiyoruz.
+        return None
+
     @logger.log_function
     def karistir(self):
         random.shuffle(self.taslar)

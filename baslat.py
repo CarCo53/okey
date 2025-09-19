@@ -15,7 +15,7 @@ def baslat_oyun(game, gorev=None):
     game.deste.olustur()
     game.deste.karistir()
     
-    # Gösterge taşı belirleme mantığı kaldırıldı. Jokerler destede kalır.
+    # Gösterge taşı çekme işlemi kaldırıldı.
 
     game.sira_kimde_index = 0
     for i, oyuncu in enumerate(game.oyuncular):
