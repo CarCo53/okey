@@ -14,6 +14,9 @@ def baslat_oyun(game, gorev=None):
     game.kazanan_index = None
     game.deste.olustur()
     game.deste.karistir()
+    
+    # Gösterge taşı belirleme mantığı kaldırıldı. Jokerler destede kalır.
+
     game.sira_kimde_index = 0
     for i, oyuncu in enumerate(game.oyuncular):
         oyuncu.el = []
@@ -28,5 +31,4 @@ def baslat_oyun(game, gorev=None):
     game.atilan_tas_degerlendirici = None
     game.acilmis_oyuncular = [False] * len(game.oyuncular)
     game.ilk_el_acan_tur = {}
-    # Her oyuncu için hamle yapma durumunu sıfırla
     game.oyuncu_hamle_yapti = [False] * len(game.oyuncular)

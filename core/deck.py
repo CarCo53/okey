@@ -1,4 +1,5 @@
 # core/deck.py
+
 import random
 from core.tile import Tile
 from log import logger
@@ -7,26 +8,18 @@ class Deck:
     @logger.log_function
     def __init__(self):
         self.taslar = []
-        self.olustur()
-        self.karistir()
-        
+
     @logger.log_function
     def olustur(self):
         self.taslar = []
-        # Her yeni deste oluşturulduğunda ID sayacını sıfırla
-        Tile.id_counter = 0
         renkler = ["sari", "mavi", "siyah", "kirmizi"]
-        
-        # 1'den 13'e kadar olan taşları oluştur
         for renk in renkler:
             for deger in range(1, 14):
                 self.taslar.append(Tile(renk, deger, f"{renk}_{deger}.png"))
                 self.taslar.append(Tile(renk, deger, f"{renk}_{deger}.png"))
-        
-        # Okey taşlarını oluştur
-        self.taslar.append(Tile("joker", 0, "okey.png"))
-        self.taslar.append(Tile("joker", 0, "okey.png"))
-        
+        self.taslar.append(Tile("joker", 0, "joker.png"))
+        self.taslar.append(Tile("joker", 0, "joker.png"))
+
     @logger.log_function
     def karistir(self):
         random.shuffle(self.taslar)
@@ -36,3 +29,11 @@ class Deck:
         if self.taslar:
             return self.taslar.pop(0)
         return None
+
+    @logger.log_function
+    def tas_ekle(self, tas):
+        self.taslar.append(tas)
+        random.shuffle(self.taslar)
+
+    def __len__(self):
+        return len(self.taslar)

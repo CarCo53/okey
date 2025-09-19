@@ -8,6 +8,8 @@ from gui.arayuzguncelle import arayuzu_guncelle
 from engine.game_manager import Game
 from ai.ai_player import AIPlayer
 from log import logger
+from core.deck import Deck
+from core.tile import Tile
 
 class Arayuz:
     @logger.log_function
@@ -23,6 +25,9 @@ class Arayuz:
         self.button_manager = ButtonManager(self)
         self.secili_tas_idler = []
         self.alanlar = {}
+        # Joker gösterim çerçevesi burada tanımlandı.
+        self.joker_gosterim_frame = tk.LabelFrame(self.pencere, text="Joker", padx=5, pady=5)
+        self.joker_tas_label = tk.Label(self.joker_gosterim_frame, text="", font=("Arial", 12, "bold"))
         self._layout_olustur()
         self.arayuzu_guncelle()
 
@@ -37,11 +42,14 @@ class Arayuz:
         self.alanlar['oyuncu_4'] = self._oyuncu_alani_olustur(oyuncu_cercevesi, "AI Oyuncu 4")
         self.masa_frame = tk.LabelFrame(self.pencere, text="Masa (Açılan Perler)", padx=10, pady=10)
         self.masa_frame.pack(pady=10, fill="both", expand=True)
-        # Yeni joker çerçevesini masa çerçevesinin altına ekle
+
         deste_ve_atilan_cerceve = tk.Frame(self.pencere)
         deste_ve_atilan_cerceve.pack(pady=5)
-        self.joker_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Kullanılan Jokerler", padx=5, pady=5)
-        self.joker_frame.pack(side=tk.LEFT, padx=10)
+        
+        # Joker gösterim çerçevesi destenin soluna eklendi
+        self.joker_gosterim_frame.pack(side=tk.LEFT, padx=10)
+        self.joker_tas_label.pack()
+
         self.deste_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Deste", padx=5, pady=5)
         self.deste_frame.pack(side=tk.LEFT, padx=10)
         self.atilan_frame = tk.LabelFrame(deste_ve_atilan_cerceve, text="Atılan Taşlar", padx=5, pady=5)
@@ -57,6 +65,12 @@ class Arayuz:
         return frame
 
     def arayuzu_guncelle(self):
+        # Joker görselini al
+        joker_gorseli = self.visuals.tas_resimleri.get("joker.png")
+        if joker_gorseli:
+            self.joker_tas_label.config(image=joker_gorseli, text="", compound="top", bd=4, relief="solid")
+            self.joker_tas_label.image = joker_gorseli
+        
         arayuzu_guncelle(self)
 
     @logger.log_function
@@ -65,18 +79,14 @@ class Arayuz:
         else: self.secili_tas_idler.append(tas_id)
         self.arayuzu_guncelle()
 
-# gui/gui.py dosyasındaki mevcut per_sec fonksiyonunu silip bunu yapıştırın.
-
     @logger.log_function
     def per_sec(self, oyuncu_index, per_index):
-        # Elimizden bir taş seçili olmalı
         if len(self.secili_tas_idler) != 1:
             self.statusbar.guncelle("Joker almak veya işlemek için elinizden 1 taş seçmelisiniz.")
             return
 
         secili_tas_id = self.secili_tas_idler[0]
 
-        # Önce joker değiştirmeyi dene
         sonuc_joker = self.oyun.joker_degistir(0, oyuncu_index, per_index, secili_tas_id)
         if sonuc_joker.get("status") == "success":
             self.secili_tas_idler = []
@@ -84,13 +94,11 @@ class Arayuz:
             self.arayuzu_guncelle()
             return
 
-        # Joker değiştirme başarısız olduysa, normal işlemeyi dene
         sonuc_islem = self.oyun.islem_yap(0, oyuncu_index, per_index, secili_tas_id)
         if sonuc_islem:
             self.secili_tas_idler = []
             self.statusbar.guncelle("Taş başarıyla işlendi!")
         else:
-            # Her ikisi de başarısız olduysa hata mesajı göster
             hata_mesaji = sonuc_joker.get("message", "Geçersiz hamle!")
             self.statusbar.guncelle(hata_mesaji)
 
@@ -120,15 +128,12 @@ class Arayuz:
         self.secili_tas_idler = []
         self.arayuzu_guncelle()
 
-# gui/gui.py dosyasındaki ai_oynat fonksiyonunu bununla değiştirin.
-
     def ai_oynat(self):
         oyun = self.oyun
         if oyun.oyun_bitti_mi():
             self.arayuzu_guncelle()
             return
 
-        # --- ATILAN TAŞI DEĞERLENDİRME AŞAMASI ---
         if oyun.oyun_durumu == GameState.ATILAN_TAS_DEGERLENDIRME:
             degerlendiren_idx = oyun.atilan_tas_degerlendirici.siradaki()
             if isinstance(oyun.oyuncular[degerlendiren_idx], AIPlayer):
@@ -141,32 +146,27 @@ class Arayuz:
                     oyun.atilan_tasi_gecti()
                 self.arayuzu_guncelle()
 
-        # --- NORMAL TUR AKIŞI ---
         elif oyun.oyun_durumu in [GameState.NORMAL_TUR, GameState.NORMAL_TAS_ATMA]:
             sira_index = oyun.sira_kimde_index
             if sira_index != 0 and isinstance(oyun.oyuncular[sira_index], AIPlayer):
                 ai_oyuncu = oyun.oyuncular[sira_index]
                 logger.info(f"Sıra AI {sira_index}'de. Durum: {oyun.oyun_durumu}")
 
-                # 1. TAŞ ÇEKME (Gerekliyse)
                 if oyun.oyun_durumu == GameState.NORMAL_TUR:
                     oyun.desteden_cek(sira_index)
                     self.arayuzu_guncelle()
 
-                # 2. HAMLE YAPMA
                 elini_acti_mi = oyun.acilmis_oyuncular[sira_index]
 
-                # A. Henüz elini açmadıysa, açmayı dener
                 if not elini_acti_mi:
                     ac_kombo = ai_oyuncu.ai_el_ac_dene(oyun)
                     if ac_kombo:
                         oyun.el_ac(sira_index, ac_kombo)
                         self.arayuzu_guncelle()
 
-                # B. Eli zaten açıksa ve işlem yapma sırası geldiyse
                 if elini_acti_mi and oyun.ilk_el_acan_tur.get(sira_index, -1) < oyun.tur_numarasi:
                     islem_yapildi = True
-                    while islem_yapildi: # İşlenecek taş kalmayana kadar döner
+                    while islem_yapildi:
                         islem_hamlesi = ai_oyuncu.ai_islem_yap_dene(oyun)
                         if islem_hamlesi:
                             if islem_hamlesi.get("action_type") == "joker_degistir":
@@ -177,19 +177,17 @@ class Arayuz:
                         else:
                             islem_yapildi = False
                 
-                # C. Yeni per açma (El zaten açıkken)
                 elif elini_acti_mi:
                     ac_kombo = ai_oyuncu.ai_el_ac_dene(oyun)
                     if ac_kombo:
                         oyun.el_ac(sira_index, ac_kombo)
                         self.arayuzu_guncelle()
 
-                # 3. TAŞ ATMA
                 if ai_oyuncu.el:
                     tas_to_discard = ai_oyuncu.karar_ver_ve_at(oyun)
                     if tas_to_discard:
                         oyun.tas_at(sira_index, tas_to_discard.id)
-                    else: # Atacak taş bulamazsa (eli bittiyse)
+                    else:
                         oyun.oyun_durumu = GameState.BITIS
                         oyun.kazanan_index = sira_index
                 self.arayuzu_guncelle()
